@@ -56,7 +56,7 @@ class TrackAdapter(
 
         // Highlight currently playing row by original index
         val isActive = tracks.indexOf(track) == MusicManager.currentIndex
-        view.alpha = if (isActive) 1f else 0.6f
+        view.alpha = if (isActive) 1f else 0.8f
 
         FontManager.applyToView(context, view)
 

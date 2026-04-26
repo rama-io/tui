@@ -50,7 +50,7 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = inflater.inflate(R.layout.view_home, container, false)
-    
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -158,7 +158,7 @@ class HomeFragment : Fragment() {
             if (MusicManager.isPlaying) R.drawable.icon_pause_circle
             else R.drawable.icon_play_circle
         )
-        repeatIcon.alpha = if (MusicManager.isRepeat) 1f else 0.3f
+        repeatIcon.alpha = if (MusicManager.isRepeat) 1f else 0.8f
 
         val track = MusicManager.currentTrack
         currentlyPlayingText.text = track?.let { "${it.displayArtists} — ${it.title}" } ?: "—"

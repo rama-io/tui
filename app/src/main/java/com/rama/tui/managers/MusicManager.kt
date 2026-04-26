@@ -59,11 +59,28 @@ object MusicManager {
 
     fun loadTracks(context: Context): Boolean {
         if (!hasPermission(context)) return false
-        val musicDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
-        allTracks = scanDir(musicDir)
+        val dirs = getStorageVolumes(context)
+        allTracks = dirs.flatMap { scanDir(it) }.sortedBy { it.title.lowercase() }
         tracks = allTracks
         if (tracks.isNotEmpty() && currentIndex < 0) currentIndex = 0
         return true
+    }
+
+    private fun getStorageVolumes(context: Context): List<File> {
+        val volumes = mutableListOf<File>()
+
+        volumes.add(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC))
+
+        context.getExternalFilesDirs(Environment.DIRECTORY_MUSIC)
+            .filterNotNull()
+            .forEach { appSpecificDir ->
+                val volumeRoot =
+                    appSpecificDir.parentFile?.parentFile?.parentFile?.parentFile?.parentFile
+                val musicDir = volumeRoot?.let { File(it, Environment.DIRECTORY_MUSIC) }
+                if (musicDir?.exists() == true) volumes.add(musicDir)
+            }
+
+        return volumes.distinct().filter { it.exists() && it.isDirectory }
     }
 
     private fun scanDir(dir: File): List<Track> =
