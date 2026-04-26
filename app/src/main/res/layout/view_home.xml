@@ -81,7 +81,7 @@
             android:gravity="center"
             android:paddingStart="16sp"
             android:paddingEnd="16sp"
-            android:text="Currently Playing"
+            android:text="--"
             android:textSize="16sp" />
     </FrameLayout>
 

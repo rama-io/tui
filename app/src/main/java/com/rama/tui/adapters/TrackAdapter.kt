@@ -52,6 +52,7 @@ class TrackAdapter(
             track.displayCountries.ifEmpty { "---" }
         view.findViewById<TextView>(R.id.track_lang).text =
             track.displayLanguages.ifEmpty { "---" }
+        view.findViewById<TextView>(R.id.track_ext).text = track.ext
 
         // Highlight currently playing row by original index
         val isActive = tracks.indexOf(track) == MusicManager.currentIndex
