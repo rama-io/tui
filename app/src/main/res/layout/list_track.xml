@@ -69,10 +69,10 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/track_time"
+        android:id="@+id/track_ext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="5m"
+        android:text="mp4"
         android:textSize="16sp"
         android:textColor="@color/disabled" />
 </LinearLayout>

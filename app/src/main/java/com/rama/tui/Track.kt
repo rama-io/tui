@@ -8,6 +8,7 @@ data class Track(
     val title: String,
     val countries: List<String>,
     val languages: List<String>,
+    val ext: String,
 ) {
     val displayArtists: String get() = artists.joinToString(", ")
     val displayCountries: String get() = countries.joinToString(", ")
@@ -18,11 +19,12 @@ data class Track(
         fun fromFile(file: File): Track {
             val parts = file.nameWithoutExtension.split(" - ").map { it.trim() }
             return Track(
-                file       = file,
-                artists    = parts.getOrNull(0)?.splitComma() ?: listOf(file.nameWithoutExtension),
-                title      = parts.getOrNull(1) ?: file.nameWithoutExtension,
-                countries  = parts.getOrNull(2)?.splitComma() ?: emptyList(),
-                languages  = parts.getOrNull(3)?.splitComma() ?: emptyList(),
+                file = file,
+                artists = parts.getOrNull(0)?.splitComma() ?: listOf(file.nameWithoutExtension),
+                title = parts.getOrNull(1) ?: file.nameWithoutExtension,
+                countries = parts.getOrNull(2)?.splitComma() ?: emptyList(),
+                languages = parts.getOrNull(3)?.splitComma() ?: emptyList(),
+                ext = file.extension,
             )
         }
 

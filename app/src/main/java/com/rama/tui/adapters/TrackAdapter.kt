@@ -28,9 +28,7 @@ class TrackAdapter(
         view.findViewById<TextView>(R.id.track_artist).text = track.displayArtists
         view.findViewById<TextView>(R.id.track_country).text = track.displayCountries
         view.findViewById<TextView>(R.id.track_lang).text = track.displayLanguages
-
-        // Dim the time field — we have no duration without reading the file
-        view.findViewById<TextView>(R.id.track_time).visibility = View.GONE
+        view.findViewById<TextView>(R.id.track_ext).text = track.ext
 
         // Highlight currently playing row
         val isActive = position == MusicManager.currentIndex

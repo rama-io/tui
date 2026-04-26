@@ -11,8 +11,8 @@
     <color name="disabled">#888</color>
     <color name="progress">#253F71</color>
     <color name="task_frequency">#71ACC7</color>
-    <color name="button_primary_color">#5866A6</color>
-    <color name="button_selected_color">#83A7E4</color>
+    <color name="button_primary_color">#556890</color>
+    <color name="button_selected_color">#768FC3</color>
     <color name="button_secondary_color">#4CAB9E</color>
     <color name="danger">#DC6364</color>
     <color name="input">#20203C</color>

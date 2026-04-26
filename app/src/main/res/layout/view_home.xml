@@ -86,6 +86,7 @@
         android:orientation="horizontal">
 
         <FrameLayout
+            android:id="@+id/repeat_button"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent">
@@ -98,14 +99,15 @@
         </FrameLayout>
 
         <FrameLayout
+            android:id="@+id/prev_button"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent">
 
             <ImageView
                 android:layout_gravity="center"
-                android:layout_width="46sp"
-                android:layout_height="46sp"
+                android:layout_width="36sp"
+                android:layout_height="36sp"
                 android:src="@drawable/icon_prev" />
         </FrameLayout>
 
@@ -117,8 +119,8 @@
 
             <ImageView
                 android:layout_gravity="center"
-                android:layout_width="56sp"
-                android:layout_height="56sp"
+                android:layout_width="42sp"
+                android:layout_height="42sp"
                 android:src="@drawable/icon_play_circle" />
         </FrameLayout>
 
@@ -130,12 +132,13 @@
 
             <ImageView
                 android:layout_gravity="center"
-                android:layout_width="46sp"
-                android:layout_height="46sp"
+                android:layout_width="36sp"
+                android:layout_height="36sp"
                 android:src="@drawable/icon_next" />
         </FrameLayout>
 
         <FrameLayout
+            android:id="@+id/shuffle_button"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent">
