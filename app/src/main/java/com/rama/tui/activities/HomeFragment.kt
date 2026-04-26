@@ -50,7 +50,7 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = inflater.inflate(R.layout.view_home, container, false)
-
+    
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -84,6 +84,15 @@ class HomeFragment : Fragment() {
             listView.smoothScrollToPosition(0)
         }
 
+        nowPlaying.setOnTouchListener { v, event ->
+            if (event.action == android.view.MotionEvent.ACTION_DOWN) {
+                val fraction = event.x / v.width
+                MusicManager.seekTo(fraction)
+                v.performClick()
+            }
+            true
+        }
+
         val filterInput = view.findViewById<EditText>(R.id.filter_input)
         val clearButton = view.findViewById<FrameLayout>(R.id.clear_button)
 
@@ -96,7 +105,7 @@ class HomeFragment : Fragment() {
                 (listView.adapter as? TrackAdapter)?.filter(s?.toString() ?: "")
             }
         })
-        
+
         clearButton.setOnClickListener {
             filterInput.text.clear()
             (listView.adapter as? TrackAdapter)?.resetToFullLibrary()

@@ -37,6 +37,11 @@ object MusicManager {
         play(index)
     }
 
+    fun seekTo(fraction: Float) {
+        val p = player ?: return
+        p.seekTo((p.duration * fraction.coerceIn(0f, 1f)).toInt())
+    }
+
     fun hasPermission(context: Context?): Boolean {
         if (context == null) return false
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true
