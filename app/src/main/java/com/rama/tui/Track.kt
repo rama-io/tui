@@ -17,11 +17,23 @@ data class Track(
     companion object {
         // Expected format: "Artist1, Artist2 - Title - Country1, Country2 - Lang1, Lang2"
         fun fromFile(file: File): Track {
-            val parts = file.nameWithoutExtension.split(" - ").map { it.trim() }
+            val name = file.nameWithoutExtension
+            val parts = name.split(" - ").map { it.trim() }
+
+            val hasArtist = parts.size > 1
+
             return Track(
                 file = file,
-                artists = parts.getOrNull(0)?.splitComma() ?: listOf(file.nameWithoutExtension),
-                title = parts.getOrNull(1) ?: file.nameWithoutExtension,
+                artists = if (hasArtist)
+                    parts[0].splitComma()
+                else
+                    emptyList(),
+
+                title = if (hasArtist)
+                    parts.getOrNull(1) ?: name
+                else
+                    name,
+
                 countries = parts.getOrNull(2)?.splitComma() ?: emptyList(),
                 languages = parts.getOrNull(3)?.splitComma() ?: emptyList(),
                 ext = file.extension,
