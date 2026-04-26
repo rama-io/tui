@@ -6,7 +6,7 @@
 
     <!-- APP / About -->
     <string name="app_name" translatable="false">Tui</string>
-    <string name="app_description">A minimal, privacy-first focus session app designed to help you stay present and intentional with your time.</string>
+    <string name="app_description">A minimal, privacy-first local music player that skips metadata entirely. What you see is exactly what you name, no hidden tags, no surprises.</string>
     <string name="icon_block_desc">No Background Tasks</string>
     <string name="icon_ads_desc">No Ads</string>
     <string name="icon_location_desc">No Trackers</string>

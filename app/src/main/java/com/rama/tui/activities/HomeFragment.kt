@@ -109,7 +109,7 @@ class HomeFragment : Fragment() {
         clearButton.setOnClickListener {
             filterInput.text.clear()
             (listView.adapter as? TrackAdapter)?.resetToFullLibrary()
-            MusicManager.setTracks(MusicManager.allTracks) // see below
+            MusicManager.setTracks(MusicManager.allTracks)
         }
 
         MusicManager.onStateChanged = { activity?.runOnUiThread { refreshUi() } }
@@ -158,10 +158,10 @@ class HomeFragment : Fragment() {
             if (MusicManager.isPlaying) R.drawable.icon_pause_circle
             else R.drawable.icon_play_circle
         )
-        repeatIcon.alpha = if (MusicManager.isRepeat) 1f else 0.8f
+        repeatIcon.alpha = if (MusicManager.isRepeat) 1f else 0.7f
 
         val track = MusicManager.currentTrack
-        currentlyPlayingText.text = track?.let { "${it.displayArtists} — ${it.title}" } ?: "—"
+        currentlyPlayingText.text = track?.let { "${it.displayArtists} - ${it.title}" } ?: "-"
 
         (listView.adapter as? TrackAdapter)?.notifyDataSetChanged()
 

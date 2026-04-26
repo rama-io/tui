@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.FrameLayout
 import android.widget.TextView
 import com.rama.tui.managers.FontManager
 import com.rama.tui.managers.MusicManager
@@ -54,9 +55,9 @@ class TrackAdapter(
             track.displayLanguages.ifEmpty { "---" }
         view.findViewById<TextView>(R.id.track_ext).text = track.ext
 
-        // Highlight currently playing row by original index
+        // Highlight currently playing row
         val isActive = tracks.indexOf(track) == MusicManager.currentIndex
-        view.alpha = if (isActive) 1f else 0.8f
+        view.findViewById<FrameLayout>(R.id.disc).alpha = if (isActive) 1f else 0.3f
 
         FontManager.applyToView(context, view)
 
