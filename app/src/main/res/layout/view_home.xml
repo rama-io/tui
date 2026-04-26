@@ -7,7 +7,7 @@
     android:background="@color/bg_primary">
 
     <LinearLayout
-        android:background="#17171D"
+        android:background="@color/input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8sp"
@@ -61,16 +61,24 @@
 
     <FrameLayout
         android:id="@+id/currently_playing_display"
-        android:background="@color/bg_4"
+        android:background="#000010"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16sp"
+        android:layout_height="30sp"
         android:layout_marginBottom="8sp">
+
+        <View
+            android:id="@+id/progress_bg"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="@color/progress" />
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#868CB3"
+            android:layout_height="match_parent"
+            android:textColor="@color/accent_tertiary"
+            android:gravity="center"
+            android:paddingStart="16sp"
+            android:paddingEnd="16sp"
             android:text="Currently Playing"
             android:textSize="16sp" />
     </FrameLayout>

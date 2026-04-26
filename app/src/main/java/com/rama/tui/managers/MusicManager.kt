@@ -30,11 +30,15 @@ object MusicManager {
 
     val currentTrack: Track? get() = tracks.getOrNull(currentIndex)
 
-    fun hasPermission(context: Context): Boolean {
+    fun hasPermission(context: Context?): Boolean {
+        if (context == null) return false
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true
+
         val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             Manifest.permission.READ_MEDIA_AUDIO
         else
             Manifest.permission.READ_EXTERNAL_STORAGE
+
         return ContextCompat.checkSelfPermission(
             context,
             permission

@@ -11,8 +11,8 @@ data class Track(
     val ext: String,
 ) {
     val displayArtists: String get() = artists.joinToString(", ")
-    val displayCountries: String get() = countries.joinToString(", ")
-    val displayLanguages: String get() = languages.joinToString(", ")
+    val displayCountries: String get() = countries.joinToString(", ") { localeCountry(it) }
+    val displayLanguages: String get() = languages.joinToString(", ") { localeLanguage(it) }
 
     companion object {
         // Expected format: "Artist1, Artist2 - Title - Country1, Country2 - Lang1, Lang2"
@@ -27,6 +27,14 @@ data class Track(
                 ext = file.extension,
             )
         }
+
+        private fun localeCountry(code: String): String =
+            java.util.Locale("", code).getDisplayCountry(java.util.Locale.ENGLISH)
+                .takeIf { it.isNotBlank() && it != code } ?: code
+
+        private fun localeLanguage(code: String): String =
+            java.util.Locale(code).getDisplayLanguage(java.util.Locale.ENGLISH)
+                .takeIf { it.isNotBlank() && it != code } ?: code
 
         private fun String.splitComma() = split(",").map { it.trim() }.filter { it.isNotEmpty() }
 
