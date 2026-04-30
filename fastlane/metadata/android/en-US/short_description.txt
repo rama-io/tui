@@ -1,1 +1,1 @@
-Privacy-first focus session app.
+Privacy-first local media player.
