@@ -42,6 +42,14 @@ object MusicManager {
 
     val currentTrack: Track? get() = tracks.getOrNull(currentIndex)
 
+    val artists: List<String>
+        get() = allTracks
+            .flatMap { it.artists }
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .distinct()
+            .sorted()
+
     // region Media Session
 
     fun initMediaSession(context: Context) {

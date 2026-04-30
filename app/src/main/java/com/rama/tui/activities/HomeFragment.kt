@@ -2,9 +2,13 @@ package com.rama.tui.activities
 
 import android.Manifest
 import android.app.Fragment
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Environment
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -44,6 +48,7 @@ class HomeFragment : Fragment() {
 
     companion object {
         private const val REQ_AUDIO = 1001
+        private const val REQ_MANAGE = 1002
     }
 
     override fun onCreateView(
@@ -127,14 +132,25 @@ class HomeFragment : Fragment() {
     }
 
     private fun loadOrRequestTracks() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || MusicManager.hasPermission(activity)) {
-            loadTracks()
-        } else {
-            val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                Manifest.permission.READ_MEDIA_AUDIO
-            else
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            requestPermissions(arrayOf(permission), REQ_AUDIO)
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !MusicManager.hasPermission(activity) -> {
+                val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                    Manifest.permission.READ_MEDIA_AUDIO
+                else
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                requestPermissions(arrayOf(permission), REQ_AUDIO)
+            }
+
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+                    !Environment.isExternalStorageManager() -> {
+                val intent = Intent(
+                    Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                    Uri.parse("package:${activity.packageName}")
+                )
+                startActivityForResult(intent, REQ_MANAGE)
+            }
+
+            else -> loadTracks()
         }
     }
 
@@ -144,8 +160,22 @@ class HomeFragment : Fragment() {
         grantResults: IntArray
     ) {
         if (requestCode == REQ_AUDIO && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
+            // Read granted. now check if we also need MANAGE_EXTERNAL_STORAGE
+            loadOrRequestTracks()
+        }
+    }
+
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: android.content.Intent?
+    ) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQ_MANAGE) {
+            // Whether granted or denied, proceed. rename/edit just won't work if denied
             loadTracks()
         }
+        TrackEditDialog.onActivityResult(activity, requestCode, resultCode)
     }
 
     private fun loadTracks() {

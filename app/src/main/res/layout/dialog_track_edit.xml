@@ -57,16 +57,15 @@
                 android:textColor="@color/foreground"
                 android:text="Artists (Comma Separated)" />
 
-            <EditText
+            <MultiAutoCompleteTextView
                 android:id="@+id/artist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:singleLine="true"
                 android:textSize="16sp"
                 android:padding="16sp"
                 android:layout_marginBottom="8sp"
-                android:background="@color/input" />
+                android:background="@color/input"
+                android:inputType="textCapWords" />
 
             <TextView
                 android:layout_width="match_parent"

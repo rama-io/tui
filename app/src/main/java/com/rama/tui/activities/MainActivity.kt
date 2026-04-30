@@ -83,12 +83,7 @@ class MainActivity : CsActivity() {
         navbar.visibility = if (visible) View.VISIBLE else View.GONE
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: android.content.Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        TrackEditDialog.onActivityResult(this, requestCode, resultCode)
-    }
-
-        companion object {
+    companion object {
         private const val KEY_PAGE = "current_page"
     }
 }
