@@ -6,7 +6,7 @@ This document defines the official visual assets and usage guidelines for Tui.
 
 ## Header
 
-![Tui Header](./img/tui_header_1280x630.svg)
+![Tui Header](./img/tui_header_1200x630.svg)
 
 Standard header image for social previews and repository sharing.
 
