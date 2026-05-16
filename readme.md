@@ -1,9 +1,10 @@
 ![Preview](./docs/img/tui_header_1200x630.svg)
 
 <p align="center">
-  <a href="https://github.com/rama-io/tui/releases/latest"><img src="https://img.shields.io/github/v/release/rama-io/tui?label=release&color=127c77" alt="Release"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPLv3%20or%20Later-1d8f58" alt="License: GPLv3 or Later"></a>
-  <a href="https://github.com/rama-io/tui/releases"><img src="https://img.shields.io/github/downloads/rama-io/tui/total?color=blue" alt="Downloads"></a>
+  <a href="https://github.com/rama-io/tui/stargazers"><img src="https://img.shields.io/github/stars/rama-io/tui?colorA=363a4f&colorB=b7bdf8&style=for-the-badge"></a>
+  <a href="https://github.com/rama-io/tui/issues"><img src="https://img.shields.io/github/issues/rama-io/tui?colorA=363a4f&colorB=f5a97f&style=for-the-badge"></a>
+  <a href="https://github.com/rama-io/tui/releases/latest"><img src="https://img.shields.io/github/v/release/rama-io/tui?colorA=363a4f&colorB=a6da95&style=for-the-badge" alt="Release"></a>
+  <a href="https://github.com/rama-io/tui/releases"><img src="https://img.shields.io/github/downloads/rama-io/tui/total?colorA=363a4f&colorB=ea999c&style=for-the-badge" alt="Downloads"></a>
 </p>
 
 # Tui
@@ -27,8 +28,8 @@ https://www.youtube.com/watch?v=We8xXVLiVI4
 
 ## Screenshots
 
-| Playlist                                                                    | Settings                                                                    | About                                                                     |
-|--------------------------------------------------------------------------|------------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| Playlist | Settings | About |
+| - | - | - |
 | ![Playlist](./fastlane/metadata/android/en-US/images/phoneScreenshots/1.png) | ![Settings](./fastlane/metadata/android/en-US/images/phoneScreenshots/2.png) | ![About](./fastlane/metadata/android/en-US/images/phoneScreenshots/3.png) |
 
 ---
