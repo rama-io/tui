@@ -16,6 +16,9 @@ object ThemeManager {
         val bg_1: Int,
         val bg_2: Int,
         val bg_3: Int,
+        val bg_4: Int,
+        val bg_display: Int,
+        val media_background: Int,
         val accent_1: Int,
         val accent_2: Int,
         val accent_3: Int,
@@ -37,6 +40,9 @@ object ThemeManager {
         bg_1 = 0xFF141417.toInt(),
         bg_2 = 0xFF1F1F29.toInt(),
         bg_3 = 0xFF24313b.toInt(),
+        bg_4 = 0xFF2E324D.toInt(),
+        bg_display = 0xFF000010.toInt(),
+        media_background = 0xFF6D8C99.toInt(),
         accent_1 = 0xFFABD68E.toInt(),
         accent_2 = 0xFFCDC58B.toInt(),
         accent_3 = 0xFFDCD07C.toInt(),
@@ -58,6 +64,9 @@ object ThemeManager {
         bg_1 = 0xFF0e190e.toInt(),
         bg_2 = 0xFF1f2920.toInt(),
         bg_3 = 0xFF2d3b24.toInt(),
+        bg_4 = 0xFF3A4D2E.toInt(),
+        bg_display = 0xFF000A00.toInt(),
+        media_background = 0xFF6D9978.toInt(),
         accent_1 = 0xFFABD68E.toInt(),
         accent_2 = 0xFFCDC58B.toInt(),
         accent_3 = 0xFFDCD07C.toInt(),
@@ -79,6 +88,9 @@ object ThemeManager {
         bg_1 = 0xFF1E1E2E.toInt(),
         bg_2 = 0xFF313244.toInt(),
         bg_3 = 0xFF45475A.toInt(),
+        bg_4 = 0xFF585B70.toInt(),
+        bg_display = 0xFF11111B.toInt(),
+        media_background = 0xFF89B4FA.toInt(),
         accent_1 = 0xFFA6E3A1.toInt(),
         accent_2 = 0xFFF9E2AF.toInt(),
         accent_3 = 0xFFFFD700.toInt(),
@@ -101,6 +113,9 @@ object ThemeManager {
         bg_1 = 0xFF282A36.toInt(),
         bg_2 = 0xFF363849.toInt(),
         bg_3 = 0xFF424450.toInt(),
+        bg_4 = 0xFF4F5163.toInt(),
+        bg_display = 0xFF1A1B26.toInt(),
+        media_background = 0xFF8BE9FD.toInt(),
         accent_1 = 0xFF50FA7B.toInt(),
         accent_2 = 0xFFF1FA8C.toInt(),
         accent_3 = 0xFFFFB86C.toInt(),
@@ -122,6 +137,9 @@ object ThemeManager {
         bg_1 = 0xFF292522.toInt(),
         bg_2 = 0xFF352F2A.toInt(),
         bg_3 = 0xFF403A34.toInt(),
+        bg_4 = 0xFF4D463E.toInt(),
+        bg_display = 0xFF161311.toInt(),
+        media_background = 0xFF8CBBA3.toInt(),
         accent_1 = 0xFF78997A.toInt(),
         accent_2 = 0xFFEBC06D.toInt(),
         accent_3 = 0xFFE49B5D.toInt(),
@@ -143,6 +161,9 @@ object ThemeManager {
         bg_1 = 0xFF1A1B26.toInt(),
         bg_2 = 0xFF24283B.toInt(),
         bg_3 = 0xFF292E42.toInt(),
+        bg_4 = 0xFF2E324D.toInt(),
+        bg_display = 0xFF0D0E17.toInt(),
+        media_background = 0xFF73DACA.toInt(),
         accent_1 = 0xFF9ECE6A.toInt(),
         accent_2 = 0xFFE0AF68.toInt(),
         accent_3 = 0xFFFF9E64.toInt(),
@@ -178,6 +199,9 @@ object ThemeManager {
             bg_1 = get(PrefsManager.PrefKeys.APP_THEME_BG_1, base.bg_1),
             bg_2 = get(PrefsManager.PrefKeys.APP_THEME_BG_2, base.bg_2),
             bg_3 = get(PrefsManager.PrefKeys.APP_THEME_BG_3, base.bg_3),
+            bg_4 = get(PrefsManager.PrefKeys.APP_THEME_BG_4, base.bg_4),
+            bg_display = get(PrefsManager.PrefKeys.APP_THEME_BG_DISPLAY, base.bg_display),
+            media_background = get(PrefsManager.PrefKeys.APP_THEME_MEDIA_BACKGROUND, base.media_background),
             accent_1 = get(PrefsManager.PrefKeys.APP_THEME_ACCENT_1, base.accent_1),
             accent_2 = get(PrefsManager.PrefKeys.APP_THEME_ACCENT_2, base.accent_2),
             accent_3 = get(PrefsManager.PrefKeys.APP_THEME_ACCENT_3, base.accent_3),
@@ -286,6 +310,21 @@ object ThemeManager {
             MAKO.bg_3, RAMA.bg_3, CATPPUCCIN_MOCHA.bg_3,
             DRACULA.bg_3, MELANGE.bg_3, TOKYO_NIGHT.bg_3, custom.bg_3,
             context.resources.getColor(R.color.bg_3) -> palette.bg_3
+
+            // bg_quaternary
+            MAKO.bg_4, RAMA.bg_4, CATPPUCCIN_MOCHA.bg_4,
+            DRACULA.bg_4, MELANGE.bg_4, TOKYO_NIGHT.bg_4, custom.bg_4,
+            context.resources.getColor(R.color.bg_4) -> palette.bg_4
+
+            // bg_display
+            MAKO.bg_display, RAMA.bg_display, CATPPUCCIN_MOCHA.bg_display,
+            DRACULA.bg_display, MELANGE.bg_display, TOKYO_NIGHT.bg_display, custom.bg_display,
+            context.resources.getColor(R.color.bg_display) -> palette.bg_display
+
+            // media_background
+            MAKO.media_background, RAMA.media_background, CATPPUCCIN_MOCHA.media_background,
+            DRACULA.media_background, MELANGE.media_background, TOKYO_NIGHT.media_background, custom.media_background,
+            context.resources.getColor(R.color.media_background) -> palette.media_background
 
             // button_primary
             MAKO.button_1, RAMA.button_1, CATPPUCCIN_MOCHA.button_1,

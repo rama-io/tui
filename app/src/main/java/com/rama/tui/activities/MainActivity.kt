@@ -10,9 +10,7 @@ import android.os.Environment
 import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -25,31 +23,6 @@ import com.rama.tui.TrackAdapter
 import com.rama.tui.managers.MusicManager
 
 class MainActivity : CsActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        MusicManager.initMediaSession(this)
-        MusicManager.requestAudioFocus(this)
-        setContentView(R.layout.activity_main)
-
-        val root = findViewById<View>(R.id.root)
-        applyEdgeToEdgePadding(root)
-        applyCurrentTheme(root)
-
-        val openSettingsBtn = findViewById<FrameLayout>(R.id.open_settings)
-        openSettingsBtn.setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
-            true
-        }
-    }
-
-    override fun onDestroy() {
-        // Service keeps running for background playback, only stop it if not playing
-        if (!MusicManager.isPlaying) {
-            MediaPlaybackService.stop(this)
-        }
-        super.onDestroy()
-    }
 
     private lateinit var listView: ListView
     private lateinit var playPauseIcon: ImageView
@@ -76,22 +49,35 @@ class MainActivity : CsActivity() {
         private const val REQ_MANAGE = 1002
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        MusicManager.initMediaSession(this)
+        MusicManager.requestAudioFocus(this)
+        setContentView(R.layout.activity_main)
+
+        val root = findViewById<View>(R.id.root)
+        applyEdgeToEdgePadding(root)
+        applyCurrentTheme(root)
+
+        val openSettingsBtn = findViewById<FrameLayout>(R.id.open_settings)
+        openSettingsBtn.setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+            true
+        }
 
         // Bind views
-        listView = view.findViewById(R.id.task_list)
-        playPauseButton = view.findViewById(R.id.play_pause_button)
-        prevButton = view.findViewById(R.id.prev_button)
-        nextButton = view.findViewById(R.id.next_button)
-        repeatButton = view.findViewById(R.id.repeat_button)
-        shuffleButton = view.findViewById(R.id.shuffle_button)
+        listView = findViewById(R.id.track_list)
+        playPauseButton = findViewById(R.id.play_pause_button)
+        prevButton = findViewById(R.id.prev_button)
+        nextButton = findViewById(R.id.next_button)
+        repeatButton = findViewById(R.id.repeat_button)
+        shuffleButton = findViewById(R.id.shuffle_button)
 
         playPauseIcon = playPauseButton.getChildAt(0) as ImageView
         repeatIcon = repeatButton.getChildAt(0) as ImageView
         shuffleIcon = shuffleButton.getChildAt(0) as ImageView
 
-        val nowPlaying = view.findViewById<FrameLayout>(R.id.currently_playing_display)
+        val nowPlaying = findViewById<FrameLayout>(R.id.currently_playing_display)
         progressBg = nowPlaying.findViewById(R.id.progress_bg)
         currentlyPlayingText = nowPlaying.getChildAt(1) as TextView
 
@@ -118,8 +104,8 @@ class MainActivity : CsActivity() {
             true
         }
 
-        val filterInput = view.findViewById<EditText>(R.id.filter_input)
-        val clearButton = view.findViewById<FrameLayout>(R.id.clear_button)
+        val filterInput = findViewById<EditText>(R.id.filter_input)
+        val clearButton = findViewById<FrameLayout>(R.id.clear_button)
 
         filterInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) =
@@ -137,22 +123,25 @@ class MainActivity : CsActivity() {
             MusicManager.setTracks(MusicManager.allTracks)
         }
 
-        MusicManager.onStateChanged = { activity?.runOnUiThread { refreshUi() } }
+        MusicManager.onStateChanged = { runOnUiThread { refreshUi() } }
 
         // Load data and start progress ticker
         loadOrRequestTracks()
         progressHandler.post(progressRunnable)
     }
 
-    override fun onDestroyView() {
+    override fun onDestroy() {
         MusicManager.onStateChanged = null
         progressHandler.removeCallbacks(progressRunnable)
-        super.onDestroyView()
+        if (!MusicManager.isPlaying) {
+            MediaPlaybackService.stop(this)
+        }
+        super.onDestroy()
     }
 
     private fun loadOrRequestTracks() {
         when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !MusicManager.hasPermission(activity) -> {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !MusicManager.hasPermission(this) -> {
                 val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                     Manifest.permission.READ_MEDIA_AUDIO
                 else
@@ -164,7 +153,7 @@ class MainActivity : CsActivity() {
                     !Environment.isExternalStorageManager() -> {
                 val intent = Intent(
                     Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-                    Uri.parse("package:${activity.packageName}")
+                    Uri.parse("package:${packageName}")
                 )
                 startActivityForResult(intent, REQ_MANAGE)
             }
@@ -179,7 +168,6 @@ class MainActivity : CsActivity() {
         grantResults: IntArray
     ) {
         if (requestCode == REQ_AUDIO && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
-            // Read granted. now check if we also need MANAGE_EXTERNAL_STORAGE
             loadOrRequestTracks()
         }
     }
@@ -191,23 +179,21 @@ class MainActivity : CsActivity() {
     ) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQ_MANAGE) {
-            // Whether granted or denied, proceed. rename/edit just won't work if denied
             loadTracks()
         }
-        TrackEditDialog.onActivityResult(activity, requestCode, resultCode)
+        TrackEditDialog.onActivityResult(this, requestCode, resultCode)
     }
 
     private fun loadTracks() {
-        MusicManager.loadTracks(activity)
-        listView.adapter = TrackAdapter(activity, MusicManager.tracks) { track ->
-            TrackEditDialog.show(activity, track) {
-                // Reload library after rename / delete / metadata strip
-                MusicManager.loadTracks(activity)
+        MusicManager.loadTracks(this)
+        listView.adapter = TrackAdapter(this, MusicManager.tracks) { track ->
+            TrackEditDialog.show(this, track) {
+                MusicManager.loadTracks(this)
                 (listView.adapter as? TrackAdapter)?.let { adapter ->
                     adapter.updateTracks(MusicManager.tracks)
                 } ?: run {
-                    listView.adapter = TrackAdapter(activity, MusicManager.tracks) { t ->
-                        TrackEditDialog.show(activity, t) { loadTracks() }
+                    listView.adapter = TrackAdapter(this, MusicManager.tracks) { t ->
+                        TrackEditDialog.show(this, t) { loadTracks() }
                     }
                 }
                 refreshUi()

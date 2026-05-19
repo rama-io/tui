@@ -10,6 +10,7 @@ import android.widget.TextView
 import com.rama.tui.Track.Companion.normalize
 import com.rama.tui.managers.FontManager
 import com.rama.tui.managers.MusicManager
+import com.rama.tui.managers.ThemeManager
 import java.text.Normalizer
 
 class TrackAdapter(
@@ -70,7 +71,7 @@ class TrackAdapter(
         val isActive = tracks.indexOf(track) == MusicManager.currentIndex
         view.findViewById<FrameLayout>(R.id.disc).alpha = if (isActive) 1f else 0.3f
 
-        FontManager.applyToView(context, view)
+        ThemeManager.applyTheme(context, view)
 
         view.setOnClickListener {
             val filteredList = filtered.toList()

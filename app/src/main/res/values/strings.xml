@@ -59,6 +59,8 @@
     <!-- InputLabel -->
 
     <!-- InputHints -->
+    <string name="hint_filter_tracks">Search…</string>
+    <string name="placeholder_now_playing">--</string>
 
     <!-- Toasts -->
     <string name="toast_invalid_color">Invalid color</string>

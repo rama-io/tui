@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.EditText
 import android.widget.MultiAutoCompleteTextView
 import android.widget.TextView
@@ -18,6 +19,7 @@ import com.rama.tui.R
 import com.rama.tui.Track
 import com.rama.tui.managers.FontManager
 import com.rama.tui.managers.MusicManager
+import com.rama.tui.managers.ThemeManager
 import java.io.File
 
 object TrackEditDialog {
@@ -115,7 +117,7 @@ object TrackEditDialog {
             embeddedMeta.entries.joinToString("\n") { (k, v) -> "$k: $v" }
         }
 
-        FontManager.applyToView(activity, dialog.findViewById(android.R.id.content))
+        ThemeManager.applyTheme(activity, dialog.findViewById(android.R.id.content))
 
         // Strip metadata
         deleteMetaBtn.setOnClickListener {

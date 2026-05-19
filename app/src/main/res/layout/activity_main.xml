@@ -14,7 +14,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8sp"
         android:paddingStart="16sp"
-        android:paddingEnd="16sp"
         android:orientation="horizontal"
         android:layout_gravity="center">
 
@@ -37,6 +36,7 @@
             android:layout_weight="1"
             android:textSize="16sp"
             android:textColor="@color/foreground"
+            android:hint="@string/hint_filter_tracks"
             android:background="@android:color/transparent" />
 
         <FrameLayout
@@ -55,7 +55,6 @@
             android:id="@+id/open_settings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/bg_1"
             android:padding="12sp">
 
             <ImageView
@@ -67,8 +66,7 @@
     </LinearLayout>
 
     <ListView
-
-        android:id="@+id/task_list"
+        android:id="@+id/track_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:divider="@android:color/transparent"
@@ -97,7 +95,7 @@
             android:gravity="center"
             android:paddingStart="16sp"
             android:paddingEnd="16sp"
-            android:text="--"
+            android:text="@string/placeholder_now_playing"
             android:textSize="16sp" />
     </FrameLayout>
 
