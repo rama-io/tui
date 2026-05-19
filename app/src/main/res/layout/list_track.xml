@@ -57,7 +57,7 @@
                 android:layout_marginEnd="8sp"
                 android:text="--"
                 android:textSize="12sp"
-                android:textColor="@color/accent" />
+                android:textColor="@color/accent_1" />
 
             <TextView
                 android:id="@+id/track_lang"
@@ -65,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:text="--"
                 android:textSize="12sp"
-                android:textColor="@color/accent_tertiary" />
+                android:textColor="@color/accent_3" />
         </LinearLayout>
     </LinearLayout>
 

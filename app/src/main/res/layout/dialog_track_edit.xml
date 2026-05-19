@@ -122,7 +122,7 @@
                 android:layout_marginBottom="8sp"
                 android:lineHeight="20sp"
                 android:textSize="16sp"
-                android:textColor="@color/accent_tertiary"
+                android:textColor="@color/accent_3"
                 android:text="Artist_1, Artist_2, .., Artist_N - Title - Country_1, Country_2, .., Country_N - Language_1, Language_2, .., Language_N" />
 
             <TextView
@@ -147,7 +147,7 @@
         </LinearLayout>
     </ScrollView>
 
-    <com.rama.tui.widgets.WdButton
+    <Button
         android:id="@+id/delete_metadata_button"
         android:layout_width="match_parent"
         android:layout_marginBottom="8sp"
@@ -155,7 +155,7 @@
         android:background="@color/danger"
         android:text="Delete metadata" />
 
-    <com.rama.tui.widgets.WdButton
+    <Button
         android:id="@+id/delete_button"
         android:layout_width="match_parent"
         android:layout_marginBottom="8sp"
@@ -163,18 +163,18 @@
         android:background="@color/danger"
         android:text="Delete track" />
 
-    <com.rama.tui.widgets.WdButton
+    <Button
         android:id="@+id/update_button"
         android:layout_width="match_parent"
         android:layout_marginBottom="8sp"
         android:layout_height="wrap_content"
-        android:background="@color/button_secondary_color"
+        android:background="@color/button_2"
         android:text="Update track" />
 
-    <com.rama.tui.widgets.WdButton
+    <Button
         android:id="@+id/cancel_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/button_primary_color"
-        android:text="@string/go_back_label" />
+        android:background="@color/button_1"
+        android:text="@string/btn_go_back" />
 </LinearLayout>
