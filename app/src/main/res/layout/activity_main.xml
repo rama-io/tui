@@ -120,7 +120,7 @@
                 android:layout_gravity="center"
                 android:layout_width="28sp"
                 android:layout_height="28sp"
-                android:src="@drawable/ic_repeat_24dp"
+                android:src="@drawable/icon_repeat_solid"
                 android:tint="@color/foreground" />
         </FrameLayout>
 
