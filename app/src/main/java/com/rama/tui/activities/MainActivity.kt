@@ -114,13 +114,15 @@ class MainActivity : CsActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
             override fun afterTextChanged(s: Editable?) {
                 (listView.adapter as? TrackAdapter)?.filter(s?.toString() ?: "")
+                refreshUi()
             }
         })
 
         clearButton.setOnClickListener {
             filterInput.text.clear()
             (listView.adapter as? TrackAdapter)?.resetToFullLibrary()
-            MusicManager.setTracks(MusicManager.allTracks)
+            MusicManager.restoreTracks(MusicManager.allTracks)
+            refreshUi()
         }
 
         MusicManager.onStateChanged = { runOnUiThread { refreshUi() } }

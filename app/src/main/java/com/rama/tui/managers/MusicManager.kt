@@ -293,6 +293,13 @@ object MusicManager {
         play(index)
     }
 
+    fun restoreTracks(newTracks: List<Track>) {
+        val playing = currentTrack
+        tracks = newTracks
+        currentIndex = newTracks.indexOf(playing).takeIf { it >= 0 } ?: currentIndex
+        onStateChanged?.invoke()
+    }
+
     fun shuffleTracks() {
         if (tracks.isEmpty()) return
         val current = currentTrack
