@@ -35,18 +35,18 @@ object TrackEditDialog {
 
     internal const val REQ_SD_TREE = 2001
 
-    // Pending rename held across the SAF picker round-trip
-    private var pendingRename: (() -> Unit)? = null
+    // Pending file operation held across the SAF picker round-trip
+    private var pendingOperation: (() -> Unit)? = null
 
     fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode != REQ_SD_TREE) return
         if (resultCode != Activity.RESULT_OK || data == null) {
-            pendingRename = null
+            pendingOperation = null
             Toast.makeText(activity, "SD card access denied", Toast.LENGTH_SHORT).show()
             return
         }
         val treeUri = data.data ?: run {
-            pendingRename = null
+            pendingOperation = null
             return
         }
         // Persist permission so we don't ask again
@@ -58,8 +58,8 @@ object TrackEditDialog {
             .setString(PrefsManager.PrefKeys.SD_TREE_URI, treeUri.toString())
 
         // Execute the deferred rename now that we have access
-        pendingRename?.invoke()
-        pendingRename = null
+        pendingOperation?.invoke()
+        pendingOperation = null
     }
 
     // ── SAF helpers ──────────────────────────────────────────────────────────
@@ -204,6 +204,11 @@ object TrackEditDialog {
             embeddedMeta.entries.joinToString("\n") { (k, v) -> "$k: $v" }
         }
 
+        // Hide metadata strip button on API < 26 (jaudiotagger 3.x requires java.nio)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            deleteMetaBtn.visibility = android.view.View.GONE
+        }
+
         ThemeManager.applyTheme(activity, dialog.findViewById(android.R.id.content))
 
         // Strip metadata
@@ -223,14 +228,16 @@ object TrackEditDialog {
             }
         }
 
-        // Delete song
+        // Delete song — routes through SAF for SD card paths
         deleteSongBtn.setOnClickListener {
-            if (track.file.delete()) {
-                Toast.makeText(activity, "Track deleted", Toast.LENGTH_SHORT).show()
-                onChanged()
-                dialog.dismiss()
-            } else {
-                Toast.makeText(activity, "Could not delete file", Toast.LENGTH_SHORT).show()
+            deleteFile(activity, track.file) { ok ->
+                if (ok) {
+                    Toast.makeText(activity, "Track deleted", Toast.LENGTH_SHORT).show()
+                    onChanged()
+                    dialog.dismiss()
+                } else if (pendingOperation == null) {
+                    Toast.makeText(activity, "Could not delete file", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
@@ -266,7 +273,7 @@ object TrackEditDialog {
                     Toast.makeText(activity, "Track renamed", Toast.LENGTH_SHORT).show()
                     onChanged()
                     dialog.dismiss()
-                } else if (pendingRename == null) {
+                } else if (pendingOperation == null) {
                     // Only show failure if we didn't just launch the SAF picker
                     Toast.makeText(activity, "Could not rename file", Toast.LENGTH_SHORT).show()
                 }
@@ -342,7 +349,7 @@ object TrackEditDialog {
             onComplete(ok)
         } else {
             // No permission yet — stash the rename and launch the picker
-            pendingRename = {
+            pendingOperation = {
                 val uri = getSafTreeUri(activity, src)
                 if (uri != null) {
                     val ok = renameViaSaf(activity, uri, src, dest.name)
@@ -378,6 +385,57 @@ object TrackEditDialog {
         } catch (e: Exception) {
             Log.e(TAG, "renameFileNative fallback failed: ${e.message}")
             dest.delete(); false
+        }
+    }
+
+    /**
+     * Deletes [file], routing through SAF for SD card paths.
+     * Mirrors the same permission flow as [renameFile].
+     */
+    private fun deleteFile(
+        activity: Activity,
+        file: File,
+        onComplete: (success: Boolean) -> Unit,
+    ) {
+        if (isOnPrimaryStorage(file)) {
+            onComplete(file.delete())
+            return
+        }
+
+        val treeUri = getSafTreeUri(activity, file)
+        if (treeUri != null) {
+            val ok = deleteViaSaf(activity, treeUri, file)
+            onComplete(ok)
+        } else {
+            pendingOperation = {
+                val uri = getSafTreeUri(activity, file)
+                if (uri != null) {
+                    val ok = deleteViaSaf(activity, uri, file)
+                    onComplete(ok)
+                } else {
+                    onComplete(false)
+                }
+            }
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val volumeId = file.canonicalPath
+                    .removePrefix("/storage/").substringBefore("/")
+                intent.putExtra(
+                    DocumentsContract.EXTRA_INITIAL_URI,
+                    Uri.parse("content://com.android.externalstorage.documents/tree/$volumeId%3A")
+                )
+            }
+            activity.startActivityForResult(intent, REQ_SD_TREE)
+        }
+    }
+
+    private fun deleteViaSaf(context: Context, treeUri: Uri, file: File): Boolean {
+        return try {
+            val docUri = findDocumentUri(context, treeUri, file) ?: return false
+            DocumentsContract.deleteDocument(context.contentResolver, docUri)
+        } catch (e: Exception) {
+            Log.e(TAG, "deleteViaSaf failed: ${e.message}")
+            false
         }
     }
 
