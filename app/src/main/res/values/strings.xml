@@ -50,8 +50,6 @@
     <string name="radio_language_system_default">System Default (fallback to English)</string>
     <string name="radio_language_english" translatable="false">English</string>
     <string name="radio_font_custom">Custom font</string>
-    <string name="radio_theme_rama">Rama</string>
-    <string name="radio_theme_mako">Mako</string>
     <string name="radio_theme_custom">Custom</string>
     <string name="radio_sort_a_z">Sort a-z</string>
     <string name="radio_sort_z_a">Sort z-a</string>
@@ -110,7 +108,7 @@
     <string name="app_ads_desc">No Ads</string>
     <string name="app_trackers_desc">No Trackers</string>
     <string name="app_offline_desc">Works Offline</string>
-    
+
     <!-- Custom Blocks -->
     <string name="checkbox_keep_files_from_the_same_folder_together">Keep files from the same folder together</string>
 

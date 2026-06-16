@@ -11,18 +11,18 @@ import com.rama.tui.R
 import com.rama.tui.activities.AboutActivity
 import com.rama.tui.activities.SettingsActivity
 import com.rama.tui.managers.MusicManager
-import com.rama.tui.utils.SettingsUiUtils
+import com.rama.bohio.util.UiActions
 
 class SettingsBasicController(private val activity: SettingsActivity) {
 
     private val prefs get() = activity.prefs
 
     fun setup() {
-        SettingsUiUtils.setupButton(activity, R.id.about_button) {
+        UiActions.setupButton(activity, R.id.about_button) {
             activity.startActivity(Intent(activity, AboutActivity::class.java))
         }
 
-        SettingsUiUtils.setupButton(activity, R.id.close_button) {
+        UiActions.setupButton(activity, R.id.close_button) {
             activity.finish()
         }
 
@@ -38,12 +38,16 @@ class SettingsBasicController(private val activity: SettingsActivity) {
             when {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ->
                     activity.requestPermissions(
-                        arrayOf(Manifest.permission.READ_MEDIA_AUDIO), SettingsActivity.REQ_MEDIA_PERM
+                        arrayOf(Manifest.permission.READ_MEDIA_AUDIO),
+                        SettingsActivity.REQ_MEDIA_PERM
                     )
+
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ->
                     activity.requestPermissions(
-                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), SettingsActivity.REQ_MEDIA_PERM
+                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                        SettingsActivity.REQ_MEDIA_PERM
                     )
+
                 else ->
                     // API 21/22: permissions are install-time; open app settings so user can toggle
                     activity.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
@@ -62,10 +66,13 @@ class SettingsBasicController(private val activity: SettingsActivity) {
                             android.net.Uri.parse("package:${activity.packageName}")
                         ), SettingsActivity.REQ_STORAGE_PERM
                     )
+
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ->
                     activity.requestPermissions(
-                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), SettingsActivity.REQ_STORAGE_PERM
+                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        SettingsActivity.REQ_STORAGE_PERM
                     )
+
                 else ->
                     activity.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                         data = android.net.Uri.parse("package:${activity.packageName}")
@@ -79,7 +86,8 @@ class SettingsBasicController(private val activity: SettingsActivity) {
 
     fun refreshPermissionButtonStates() {
         val mediaBtn = activity.findViewById<android.widget.Button>(R.id.media_permission_button)
-        val storageBtn = activity.findViewById<android.widget.Button>(R.id.storage_permission_button)
+        val storageBtn =
+            activity.findViewById<android.widget.Button>(R.id.storage_permission_button)
 
         val hasMedia = MusicManager.hasPermission(activity)
         mediaBtn.alpha = if (hasMedia) 0.4f else 1.0f

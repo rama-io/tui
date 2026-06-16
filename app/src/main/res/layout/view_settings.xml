@@ -86,13 +86,18 @@
                     style="@style/RadioGroup">
 
                     <RadioButton
+                        android:id="@+id/theme_teyin"
+                        android:text="@string/product_teyin"
+                        style="@style/Radio" />
+
+                    <RadioButton
                         android:id="@+id/theme_mako"
-                        android:text="@string/radio_theme_mako"
+                        android:text="@string/product_mako"
                         style="@style/Radio" />
 
                     <RadioButton
                         android:id="@+id/theme_rama"
-                        android:text="@string/radio_theme_rama"
+                        android:text="@string/product_rama"
                         style="@style/Radio" />
 
                     <RadioButton

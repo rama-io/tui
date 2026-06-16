@@ -10,11 +10,9 @@ import android.view.WindowInsets
 import android.view.WindowManager
 import com.rama.bohio.managers.FontManager
 import com.rama.bohio.managers.ThemeManager
-import com.rama.tui.utils.dp
+import com.rama.bohio.util.Dimens.dpToPx
 import com.rama.tui.managers.PrefsManager
 import com.rama.tui.utils.LocaleHelper
-import kotlin.text.toInt
-import kotlin.times
 
 abstract class CsActivity : Activity() {
 
@@ -132,8 +130,8 @@ abstract class CsActivity : Activity() {
     }
 
     protected fun applyEdgeToEdgePadding(root: View) {
-        val paddingInline = dp(16)
-        val paddingBlock = dp(8)
+        val paddingInline = dpToPx(this, 16f)
+        val paddingBlock = dpToPx(this, 8f)
 
         root.setOnApplyWindowInsetsListener { view, insets ->
 
