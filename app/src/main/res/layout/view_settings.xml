@@ -55,7 +55,7 @@
                         android:text="@string/label_zoom"
                         style="@style/Text" />
 
-                    <com.rama.tui.widgets.WdRange
+                    <com.rama.bohio.widgets.WdRange
                         android:id="@+id/zoom"
                         app:valuesArray="@array/ui_scale_steps"
                         style="@style/BlockFlow" />
