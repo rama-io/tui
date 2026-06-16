@@ -92,7 +92,7 @@ class MainActivity : CsActivity() {
         }
         shuffleButton.setOnClickListener {
             val keepTogether = prefs.getBoolean(
-                com.rama.tui.managers.PrefsManager.PrefKeys.LIST_SORT_KEEP_TOGETHER, false
+                com.rama.tui.managers.PrefsManager.FileKeys.LIST_SORT_KEEP_TOGETHER, false
             )
             MusicManager.shuffleTracks(keepTogether)
             (listView.adapter as? TrackAdapter)?.updateTracks(MusicManager.tracks)
@@ -151,11 +151,13 @@ class MainActivity : CsActivity() {
                 val permissions = when {
                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ->
                         arrayOf(Manifest.permission.READ_MEDIA_AUDIO)
+
                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ->
                         arrayOf(
                             Manifest.permission.READ_EXTERNAL_STORAGE,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         )
+
                     else -> emptyArray()
                 }
                 requestPermissions(permissions, REQ_AUDIO)
@@ -180,7 +182,8 @@ class MainActivity : CsActivity() {
         grantResults: IntArray
     ) {
         if (requestCode == REQ_AUDIO && grantResults.isNotEmpty() &&
-            grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+            grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+        ) {
             loadOrRequestTracks()
         }
     }

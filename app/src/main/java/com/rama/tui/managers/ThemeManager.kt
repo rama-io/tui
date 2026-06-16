@@ -9,7 +9,7 @@ import android.widget.RadioButton
 import android.widget.TextView
 import com.rama.tui.R
 
-object ThemeManager {
+//object ThemeManager {
 
 
 //    private fun applyToView(
@@ -72,19 +72,19 @@ object ThemeManager {
 //    }
 
 
-    private fun resolveDrawableColor(drawable: android.graphics.drawable.Drawable): Int? {
-        return if (drawable is ColorDrawable) drawable.color else null
-    }
+//    private fun resolveDrawableColor(drawable: android.graphics.drawable.Drawable): Int? {
+//        return if (drawable is ColorDrawable) drawable.color else null
+//    }
 
-    /**
-     * Reads the tint color seeded by android:tint in the layout XML.
-     * Returns null if no tint has been set (icon will be skipped this pass).
-     */
-    private fun resolveDrawableFillColor(context: Context, view: ImageView): Int? {
-        // android:tint in XML is exposed as imageTintList, but we already handle
-        // the tintList != null case before calling this. This path is only reached
-        // when no tint is set at all, which shouldn't happen once the layouts are
-        // updated. Return null so we skip safely rather than guess.
-        return null
-    }
-}
+//    /**
+//     * Reads the tint color seeded by android:tint in the layout XML.
+//     * Returns null if no tint has been set (icon will be skipped this pass).
+//     */
+//    private fun resolveDrawableFillColor(context: Context, view: ImageView): Int? {
+//        // android:tint in XML is exposed as imageTintList, but we already handle
+//        // the tintList != null case before calling this. This path is only reached
+//        // when no tint is set at all, which shouldn't happen once the layouts are
+//        // updated. Return null so we skip safely rather than guess.
+//        return null
+//    }
+//}

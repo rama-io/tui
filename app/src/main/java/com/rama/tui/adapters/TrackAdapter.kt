@@ -8,9 +8,8 @@ import android.widget.BaseAdapter
 import android.widget.FrameLayout
 import android.widget.TextView
 import com.rama.tui.Track.Companion.normalize
-import com.rama.tui.managers.FontManager
 import com.rama.tui.managers.MusicManager
-import com.rama.tui.managers.ThemeManager
+import com.rama.bohio.managers.ThemeManager
 
 class TrackAdapter(
     private val context: Context,

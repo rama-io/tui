@@ -8,8 +8,8 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
-import com.rama.tui.managers.FontManager
-import com.rama.tui.managers.ThemeManager
+import com.rama.bohio.managers.FontManager
+import com.rama.bohio.managers.ThemeManager
 import com.rama.tui.utils.dp
 import com.rama.tui.managers.PrefsManager
 import com.rama.tui.utils.LocaleHelper

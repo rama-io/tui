@@ -12,6 +12,7 @@ import android.media.session.MediaSession
 import android.media.session.PlaybackState
 import com.rama.tui.MediaButtonReceiver
 import com.rama.tui.MediaPlaybackService
+import com.rama.tui.PrefSortStyle
 import com.rama.tui.Track
 import java.io.File
 
@@ -189,8 +190,8 @@ object MusicManager {
         if (!hasPermission(context)) return false
         val prefs = PrefsManager.getInstance(context)
         val sortStyle =
-            prefs.getString(PrefsManager.PrefKeys.LIST_SORT_STYLE, PrefsManager.SortStyle.AZ)
-        val keepTogether = prefs.getBoolean(PrefsManager.PrefKeys.LIST_SORT_KEEP_TOGETHER, false)
+            prefs.getString(PrefsManager.FileKeys.LIST_SORT_STYLE, PrefSortStyle.AZ)
+        val keepTogether = prefs.getBoolean(PrefsManager.FileKeys.LIST_SORT_KEEP_TOGETHER, false)
 
         val dirs = getStorageRoots(context)
         val raw = dirs.flatMap { scanDir(it) }
@@ -201,7 +202,7 @@ object MusicManager {
 
         val disabledFolders = prefs.getDisabledFolders()
         val filtered = if (disabledFolders.isEmpty()) raw
-            else raw.filter { it.file.parent !in disabledFolders }
+        else raw.filter { it.file.parent !in disabledFolders }
 
         allTracks = sortTracks(filtered, sortStyle, keepTogether)
         tracks = allTracks
@@ -212,8 +213,8 @@ object MusicManager {
     fun reSort(context: Context) {
         val prefs = PrefsManager.getInstance(context)
         val sortStyle =
-            prefs.getString(PrefsManager.PrefKeys.LIST_SORT_STYLE, PrefsManager.SortStyle.AZ)
-        val keepTogether = prefs.getBoolean(PrefsManager.PrefKeys.LIST_SORT_KEEP_TOGETHER, false)
+            prefs.getString(PrefsManager.FileKeys.LIST_SORT_STYLE, PrefSortStyle.AZ)
+        val keepTogether = prefs.getBoolean(PrefsManager.FileKeys.LIST_SORT_KEEP_TOGETHER, false)
         allTracks = sortTracks(allTracks, sortStyle, keepTogether)
         tracks = allTracks
         currentIndex = tracks.indexOf(currentTrack).coerceAtLeast(0)
@@ -227,14 +228,14 @@ object MusicManager {
         keepTogether: Boolean
     ): List<Track> {
         val comparator: Comparator<Track> = when (sortStyle) {
-            PrefsManager.SortStyle.ZA -> compareByDescending { it.title.lowercase() }
+            PrefSortStyle.ZA -> compareByDescending { it.title.lowercase() }
             else -> compareBy { it.title.lowercase() }
         }
 
         return if (keepTogether) {
             // Group by parent folder, sort folder names, then sort within each folder
             val folderComparator: Comparator<String> = when (sortStyle) {
-                PrefsManager.SortStyle.ZA -> compareByDescending { it.lowercase() }
+                PrefSortStyle.ZA -> compareByDescending { it.lowercase() }
                 else -> compareBy { it.lowercase() }
             }
             source

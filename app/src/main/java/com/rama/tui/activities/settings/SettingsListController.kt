@@ -3,9 +3,8 @@ package com.rama.tui.activities.settings
 import android.widget.RadioGroup
 import com.rama.tui.R
 import com.rama.tui.activities.SettingsActivity
-import com.rama.tui.managers.PrefsManager
-import com.rama.tui.managers.PrefsManager.PrefKeys
-import com.rama.tui.managers.PrefsManager.SortStyle
+import com.rama.tui.managers.PrefsManager.FileKeys
+import com.rama.tui.PrefSortStyle
 
 class SettingsListController(private val activity: SettingsActivity) {
 
@@ -15,20 +14,20 @@ class SettingsListController(private val activity: SettingsActivity) {
         val sortGroup = activity.findViewById<RadioGroup>(R.id.list_sort)
 
         // Restore saved sort style
-        val currentStyle = prefs.getString(PrefKeys.LIST_SORT_STYLE, SortStyle.AZ)
+        val currentStyle = prefs.getString(FileKeys.LIST_SORT_STYLE, PrefSortStyle.AZ)
         sortGroup.check(
             when (currentStyle) {
-                SortStyle.ZA -> R.id.sort_za
+                PrefSortStyle.ZA -> R.id.sort_za
                 else -> R.id.sort_az
             }
         )
 
         sortGroup.setOnCheckedChangeListener { _, checkedId ->
             val newStyle = when (checkedId) {
-                R.id.sort_za -> SortStyle.ZA
-                else -> SortStyle.AZ
+                R.id.sort_za -> PrefSortStyle.ZA
+                else -> PrefSortStyle.AZ
             }
-            prefs.setString(PrefKeys.LIST_SORT_STYLE, newStyle)
+            prefs.setString(FileKeys.LIST_SORT_STYLE, newStyle)
             onSortChanged()
         }
     }

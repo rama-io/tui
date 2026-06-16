@@ -5,17 +5,16 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
-import android.view.WindowManager
 import com.rama.tui.CsActivity
 import com.rama.tui.R
+import com.rama.bohio.R as BohioR
+import com.rama.tui.managers.MusicManager
 import com.rama.tui.activities.settings.SettingsAppearanceController
 import com.rama.tui.activities.settings.SettingsBasicController
 import com.rama.tui.activities.settings.SettingsCheckboxController
-import com.rama.tui.activities.settings.SettingsFoldersController
 import com.rama.tui.activities.settings.SettingsLanguageController
+import com.rama.tui.activities.settings.SettingsFoldersController
 import com.rama.tui.activities.settings.SettingsListController
-import com.rama.tui.managers.MusicManager
-import com.rama.tui.managers.PrefsManager
 
 class SettingsActivity : CsActivity() {
     private lateinit var appearanceController: SettingsAppearanceController
@@ -68,7 +67,8 @@ class SettingsActivity : CsActivity() {
         if (requestCode == REQ_MEDIA_PERM || requestCode == REQ_STORAGE_PERM) {
             basicController.refreshPermissionButtonStates()
             if (grantResults.isNotEmpty() &&
-                grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+                grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+            ) {
                 MusicManager.loadTracks(this)
                 foldersController.populateFolders { MusicManager.loadTracks(this) }
                 setResult(Activity.RESULT_OK)

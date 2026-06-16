@@ -23,10 +23,9 @@ import android.widget.TextView
 import android.widget.Toast
 import com.rama.tui.R
 import com.rama.tui.Track
-import com.rama.tui.managers.FontManager
 import com.rama.tui.managers.MusicManager
 import com.rama.tui.managers.PrefsManager
-import com.rama.tui.managers.ThemeManager
+import com.rama.bohio.managers.ThemeManager
 import java.io.File
 
 object TrackEditDialog {
@@ -55,7 +54,7 @@ object TrackEditDialog {
             Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
         )
         PrefsManager.getInstance(activity)
-            .setString(PrefsManager.PrefKeys.SD_TREE_URI, treeUri.toString())
+            .setString(PrefsManager.FileKeys.SD_TREE_URI, treeUri.toString())
 
         // Execute the deferred rename now that we have access
         pendingOperation?.invoke()
@@ -76,7 +75,7 @@ object TrackEditDialog {
      */
     private fun getSafTreeUri(context: Context, file: File): Uri? {
         val raw = PrefsManager.getInstance(context)
-            .getString(PrefsManager.PrefKeys.SD_TREE_URI, "") ?: return null
+            .getString(PrefsManager.FileKeys.SD_TREE_URI, "") ?: return null
         val treeUri = Uri.parse(raw)
 
         // Verify we still hold the permission

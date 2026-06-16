@@ -3,9 +3,9 @@ package com.rama.tui.activities.settings
 import com.rama.tui.R
 import com.rama.tui.activities.SettingsActivity
 import com.rama.tui.managers.PrefsManager
-import com.rama.tui.managers.ThemeManager
-import com.rama.tui.widgets.WdCheckbox
-import com.rama.tui.widgets.WdCollapsibleSection
+import com.rama.bohio.managers.ThemeManager
+import com.rama.bohio.widgets.WdCheckbox
+import com.rama.bohio.widgets.WdCollapsibleSection
 
 class SettingsFoldersController(private val activity: SettingsActivity) {
 
