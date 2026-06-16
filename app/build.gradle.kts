@@ -33,12 +33,18 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             vcsInfo.include = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        create("beta") {
+            applicationIdSuffix = ".beta"
+            versionNameSuffix = "-beta"
+            isMinifyEnabled = false
             signingConfig = signingConfigs.getByName("debug")
         }
         debug {
@@ -74,4 +80,5 @@ android {
 
 dependencies {
     implementation("net.jthink:jaudiotagger:3.0.1")
+    implementation(project(":bohio"))
 }

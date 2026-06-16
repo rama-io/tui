@@ -11,442 +11,69 @@ import com.rama.tui.R
 
 object ThemeManager {
 
-    data class Palette(
-        val h1: Int,
-        val foreground: Int,
-        val bg_1: Int,
-        val bg_2: Int,
-        val bg_3: Int,
-        val bg_4: Int,
-        val bg_display: Int,
-        val media_background: Int,
-        val accent_1: Int,
-        val accent_2: Int,
-        val accent_3: Int,
-        val accent_4: Int,
-        val disabled: Int,
-        val input: Int,
-        val button_1: Int,
-        val button_1_selected: Int,
-        val button_2: Int,
-        val danger: Int,
-        val collapsible_header: Int,
-        val progressbar: Int,
-    )
 
-    // Mako (default)
-    private val MAKO = Palette(
-        h1 = 0xFFCACACA.toInt(),
-        foreground = 0xFFCCCCCC.toInt(),
-        bg_1 = 0xFF141417.toInt(),
-        bg_2 = 0xFF1F1F29.toInt(),
-        bg_3 = 0xFF24313b.toInt(),
-        bg_4 = 0xFF2E324D.toInt(),
-        bg_display = 0xFF000010.toInt(),
-        media_background = 0xFF6D8C99.toInt(),
-        accent_1 = 0xFFABD68E.toInt(),
-        accent_2 = 0xFFCDC58B.toInt(),
-        accent_3 = 0xFFDCD07C.toInt(),
-        accent_4 = 0xFF7CB1DC.toInt(),
-        disabled = 0xFF888888.toInt(),
-        input = 0xFF16161F.toInt(),
-        button_1 = 0xFF459984.toInt(),
-        button_1_selected = 0xFF5DB89F.toInt(),
-        button_2 = 0xFF6194AF.toInt(),
-        danger = 0xFFDC6364.toInt(),
-        collapsible_header = 0xFF878787.toInt(),
-        progressbar = 0xFF3D4E36.toInt(),
-    )
+//    private fun applyToView(
+//        context: Context,
+//        view: View,
+//        palette: Palette,
+//        typeface: android.graphics.Typeface?
+//    ) {
+//        // Icon tinting, ImageView src drawables use @color/* fill colors which don't
+//        // update automatically when the palette changes. We apply an imageTintList so
+//        // the color is remapped through the same mapColor logic used everywhere else.
+//        if (view is ImageView) {
+//            val currentTint = view.imageTintList?.defaultColor
+//            if (currentTint != null) {
+//                val mapped = mapColor(context, currentTint, palette)
+//                if (mapped != null) {
+//                    view.imageTintList = android.content.res.ColorStateList.valueOf(mapped)
+//                }
+//            } else {
+//                // No tint set yet, seed from the drawable's fill color resource so
+//                // subsequent theme switches can remap it correctly.
+//                val seedColor = resolveDrawableFillColor(context, view) ?: return
+//                val mapped = mapColor(context, seedColor, palette) ?: seedColor
+//                view.imageTintList = android.content.res.ColorStateList.valueOf(mapped)
+//            }
+//            return
+//        }
+//
+//        // Font + text color
+//        if (view is TextView) {
+//            typeface?.let { view.typeface = it }
+//            when (view) {
+//                is RadioButton, is CheckBox -> {
+//                    // Apply foreground text color
+//                    view.setTextColor(palette.foreground)
+//                    // Apply accent tint to the button drawable (the circle/tick)
+//                    val tintList = android.content.res.ColorStateList(
+//                        arrayOf(
+//                            intArrayOf(android.R.attr.state_checked),
+//                            intArrayOf(-android.R.attr.state_checked)
+//                        ),
+//                        intArrayOf(palette.accent_1, palette.disabled)
+//                    )
+//                    view.buttonTintList = tintList
+//                }
+//
+//                else -> {
+//                    // Only remap if we recognise the color, don't blindly overwrite
+//                    // with foreground, as that would clobber clock/icon/header text colors
+//                    val mapped = mapColor(context, view.currentTextColor, palette)
+//                    if (mapped != null) view.setTextColor(mapped)
+//                }
+//            }
+//        }
+//
+//        // Background
+//        val currentColor = resolveDrawableColor(view.background ?: return) ?: return
+//        val mapped = mapColor(context, currentColor, palette) ?: return
+//        view.setBackgroundColor(mapped)
+//    }
 
-    // Rama
-    private val RAMA = Palette(
-        h1 = 0xFFABD68E.toInt(),
-        foreground = 0xFFcbdecd.toInt(),
-        bg_1 = 0xFF0e190e.toInt(),
-        bg_2 = 0xFF1f2920.toInt(),
-        bg_3 = 0xFF2d3b24.toInt(),
-        bg_4 = 0xFF3A4D2E.toInt(),
-        bg_display = 0xFF000A00.toInt(),
-        media_background = 0xFF6D9978.toInt(),
-        accent_1 = 0xFFABD68E.toInt(),
-        accent_2 = 0xFFCDC58B.toInt(),
-        accent_3 = 0xFFDCD07C.toInt(),
-        accent_4 = 0xFF6D9978.toInt(),
-        disabled = 0xFF888888.toInt(),
-        input = 0xFF161f16.toInt(),
-        button_1 = 0xFFABD68E.toInt(),
-        button_1_selected = 0xFFC4E7AD.toInt(),
-        button_2 = 0xFFb8e39d.toInt(),
-        danger = 0xFFDC6364.toInt(),
-        collapsible_header = 0xFF8DE285.toInt(),
-        progressbar = 0xFF4F6B45.toInt(),
-    )
-
-    // Catppuccin Mocha
-    private val CATPPUCCIN_MOCHA = Palette(
-        h1 = 0xFFCBA6F7.toInt(),
-        foreground = 0xFFCDD6F4.toInt(),
-        bg_1 = 0xFF1E1E2E.toInt(),
-        bg_2 = 0xFF313244.toInt(),
-        bg_3 = 0xFF45475A.toInt(),
-        bg_4 = 0xFF585B70.toInt(),
-        bg_display = 0xFF11111B.toInt(),
-        media_background = 0xFF89B4FA.toInt(),
-        accent_1 = 0xFFA6E3A1.toInt(),
-        accent_2 = 0xFFF9E2AF.toInt(),
-        accent_3 = 0xFFFFD700.toInt(),
-        accent_4 = 0xFF89B4FA.toInt(),
-        disabled = 0xFF6C7086.toInt(),
-        input = 0xFF181825.toInt(),
-        button_1 = 0xFFCBA6F7.toInt(),
-        button_1_selected = 0xFFDDBBFF.toInt(),
-        button_2 = 0xFF89B4FA.toInt(),
-        danger = 0xFFF38BA8.toInt(),
-        collapsible_header = 0xFFB4BEFE.toInt(),
-        progressbar = 0xFF5E4A73.toInt(),
-    )
-
-    private val CATPPUCCIN_LATTE = Palette(
-        h1 = 0xFF8839EF.toInt(),
-        foreground = 0xFF4C4F69.toInt(),
-        bg_1 = 0xFFEFF1F5.toInt(),
-        bg_2 = 0xFFE6E9EF.toInt(),
-        bg_3 = 0xFFCCD0DA.toInt(),
-        bg_4 = 0xFFBCC0CC.toInt(),
-        bg_display = 0xFFDCE0E8.toInt(),
-        media_background = 0xFF04A5E5.toInt(),
-        accent_1 = 0xFF40A02B.toInt(),
-        accent_2 = 0xFFDF8E1D.toInt(),
-        accent_3 = 0xFFFE640B.toInt(),
-        accent_4 = 0xFF04A5E5.toInt(),
-        disabled = 0xFF9CA0B0.toInt(),
-        input = 0xFFE6E9EF.toInt(),
-        button_1 = 0xFF8839EF.toInt(),
-        button_1_selected = 0xFFA16CF5.toInt(),
-        button_2 = 0xFF04A5E5.toInt(),
-        danger = 0xFFD20F39.toInt(),
-        collapsible_header = 0xFF7287FD.toInt(),
-        progressbar = 0xFFB7D6A8.toInt(),
-    )
-
-    // Dracula
-    private val DRACULA = Palette(
-        h1 = 0xFFBD93F9.toInt(),
-        foreground = 0xFFF8F8F2.toInt(),
-        bg_1 = 0xFF282A36.toInt(),
-        bg_2 = 0xFF363849.toInt(),
-        bg_3 = 0xFF424450.toInt(),
-        bg_4 = 0xFF4F5163.toInt(),
-        bg_display = 0xFF1A1B26.toInt(),
-        media_background = 0xFF8BE9FD.toInt(),
-        accent_1 = 0xFF50FA7B.toInt(),
-        accent_2 = 0xFFF1FA8C.toInt(),
-        accent_3 = 0xFFFFB86C.toInt(),
-        accent_4 = 0xFF8BE9FD.toInt(),
-        disabled = 0xFF6272A4.toInt(),
-        input = 0xFF21222C.toInt(),
-        button_1 = 0xFFBD93F9.toInt(),
-        button_1_selected = 0xFFD1B3FF.toInt(),
-        button_2 = 0xFF8BE9FD.toInt(),
-        danger = 0xFFFF79C6.toInt(),
-        collapsible_header = 0xFFBD93F9.toInt(),
-        progressbar = 0xFF5A4A75.toInt(),
-    )
-
-    // Mélange Dark
-    private val MELANGE = Palette(
-        h1 = 0xFFEBC06D.toInt(),
-        foreground = 0xFFECE1D7.toInt(),
-        bg_1 = 0xFF292522.toInt(),
-        bg_2 = 0xFF352F2A.toInt(),
-        bg_3 = 0xFF403A34.toInt(),
-        bg_4 = 0xFF4D463E.toInt(),
-        bg_display = 0xFF161311.toInt(),
-        media_background = 0xFF8CBBA3.toInt(),
-        accent_1 = 0xFF78997A.toInt(),
-        accent_2 = 0xFFEBC06D.toInt(),
-        accent_3 = 0xFFE49B5D.toInt(),
-        accent_4 = 0xFF8CBBA3.toInt(),
-        disabled = 0xFF867462.toInt(),
-        input = 0xFF211E1B.toInt(),
-        button_1 = 0xFFEBC06D.toInt(),
-        button_1_selected = 0xFFF4D18D.toInt(),
-        button_2 = 0xFF78997A.toInt(),
-        danger = 0xFFB65C60.toInt(),
-        collapsible_header = 0xFFEBC06D.toInt(),
-        progressbar = 0xFF5C4A2B.toInt(),
-    )
-
-    // Tokyo Night
-    private val TOKYO_NIGHT = Palette(
-        h1 = 0xFF7AA2F7.toInt(),
-        foreground = 0xFFC0CAF5.toInt(),
-        bg_1 = 0xFF1A1B26.toInt(),
-        bg_2 = 0xFF24283B.toInt(),
-        bg_3 = 0xFF292E42.toInt(),
-        bg_4 = 0xFF2E324D.toInt(),
-        bg_display = 0xFF0D0E17.toInt(),
-        media_background = 0xFF73DACA.toInt(),
-        accent_1 = 0xFF9ECE6A.toInt(),
-        accent_2 = 0xFFE0AF68.toInt(),
-        accent_3 = 0xFFFF9E64.toInt(),
-        accent_4 = 0xFF2AC3DE.toInt(),
-        disabled = 0xFF565F89.toInt(),
-        input = 0xFF16161E.toInt(),
-        button_1 = 0xFF7AA2F7.toInt(),
-        button_1_selected = 0xFFA3C1FF.toInt(),
-        button_2 = 0xFF2AC3DE.toInt(),
-        danger = 0xFFF7768E.toInt(),
-        collapsible_header = 0xFF7AA2F7.toInt(),
-        progressbar = 0xFF34456B.toInt(),
-    )
-
-    fun paletteFor(theme: String, context: android.content.Context? = null): Palette =
-        when (theme) {
-            PrefsManager.Theme.RAMA -> RAMA
-            PrefsManager.Theme.CATPPUCCIN_MOCHA -> CATPPUCCIN_MOCHA
-            PrefsManager.Theme.CATPPUCCIN_LATTE -> CATPPUCCIN_LATTE
-            PrefsManager.Theme.DRACULA -> DRACULA
-            PrefsManager.Theme.MELANGE -> MELANGE
-            PrefsManager.Theme.TOKYO_NIGHT -> TOKYO_NIGHT
-            PrefsManager.Theme.CUSTOM -> if (context != null) buildCustomPalette(context) else MAKO
-            else -> MAKO
-        }
-
-    private fun buildCustomPalette(context: android.content.Context): Palette {
-        val prefs = PrefsManager.getInstance(context)
-        val base = MAKO
-        fun get(key: String, fallback: Int) = prefs.getCustomThemeColor(key, fallback)
-        return Palette(
-            h1 = get(PrefsManager.PrefKeys.APP_THEME_H1, base.h1),
-            foreground = get(PrefsManager.PrefKeys.APP_THEME_FOREGROUND, base.foreground),
-            bg_1 = get(PrefsManager.PrefKeys.APP_THEME_BG_1, base.bg_1),
-            bg_2 = get(PrefsManager.PrefKeys.APP_THEME_BG_2, base.bg_2),
-            bg_3 = get(PrefsManager.PrefKeys.APP_THEME_BG_3, base.bg_3),
-            bg_4 = get(PrefsManager.PrefKeys.APP_THEME_BG_4, base.bg_4),
-            bg_display = get(PrefsManager.PrefKeys.APP_THEME_BG_DISPLAY, base.bg_display),
-            media_background = get(
-                PrefsManager.PrefKeys.APP_THEME_MEDIA_BACKGROUND,
-                base.media_background
-            ),
-            accent_1 = get(PrefsManager.PrefKeys.APP_THEME_ACCENT_1, base.accent_1),
-            accent_2 = get(PrefsManager.PrefKeys.APP_THEME_ACCENT_2, base.accent_2),
-            accent_3 = get(PrefsManager.PrefKeys.APP_THEME_ACCENT_3, base.accent_3),
-            accent_4 = get(PrefsManager.PrefKeys.APP_THEME_ACCENT_4, base.accent_4),
-            disabled = get(PrefsManager.PrefKeys.APP_THEME_DISABLED, base.disabled),
-            input = get(PrefsManager.PrefKeys.APP_THEME_INPUT, base.input),
-            button_1 = get(PrefsManager.PrefKeys.APP_THEME_BUTTON_1, base.button_1),
-            button_1_selected = get(
-                PrefsManager.PrefKeys.APP_THEME_BUTTON_1_SELECTED,
-                base.button_1_selected
-            ),
-            button_2 = get(PrefsManager.PrefKeys.APP_THEME_BUTTON_2, base.button_2),
-            danger = get(PrefsManager.PrefKeys.APP_THEME_DANGER, base.danger),
-            collapsible_header = get(
-                PrefsManager.PrefKeys.APP_THEME_COLLAPSIBLE_HEADER,
-                base.collapsible_header
-            ),
-            progressbar = get(PrefsManager.PrefKeys.APP_THEME_PROGRESS_BAR, base.progressbar),
-        )
-    }
-
-    fun applyTheme(context: Context, root: View) {
-        val prefs = PrefsManager.getInstance(context)
-        val palette = paletteFor(prefs.getTheme(), context)
-        val typeface = FontManager.getTypeface(context, prefs.getFontStyle())
-        applyRecursively(context, root, palette, typeface)
-    }
-
-    private fun applyRecursively(
-        context: Context,
-        view: View,
-        palette: Palette,
-        typeface: android.graphics.Typeface?
-    ) {
-        applyToView(context, view, palette, typeface)
-        if (view is ViewGroup) {
-            for (i in 0 until view.childCount) {
-                applyRecursively(context, view.getChildAt(i), palette, typeface)
-            }
-        }
-    }
-
-    private fun applyToView(
-        context: Context,
-        view: View,
-        palette: Palette,
-        typeface: android.graphics.Typeface?
-    ) {
-        // Icon tinting, ImageView src drawables use @color/* fill colors which don't
-        // update automatically when the palette changes. We apply an imageTintList so
-        // the color is remapped through the same mapColor logic used everywhere else.
-        if (view is ImageView) {
-            val currentTint = view.imageTintList?.defaultColor
-            if (currentTint != null) {
-                // Already has a tint, remap it to the new palette slot
-                val mapped = mapColor(context, currentTint, palette)
-                if (mapped != null) {
-                    view.imageTintList = android.content.res.ColorStateList.valueOf(mapped)
-                }
-            } else {
-                // No tint set yet, seed from the drawable's fill color resource so
-                // subsequent theme switches can remap it correctly.
-                val seedColor = resolveDrawableFillColor(context, view) ?: return
-                val mapped = mapColor(context, seedColor, palette) ?: seedColor
-                view.imageTintList = android.content.res.ColorStateList.valueOf(mapped)
-            }
-            return
-        }
-
-        // Font + text color
-        if (view is TextView) {
-            typeface?.let { view.typeface = it }
-            when (view) {
-                is RadioButton, is CheckBox -> {
-                    // Apply foreground text color
-                    view.setTextColor(palette.foreground)
-                    // Apply accent tint to the button drawable (the circle/tick)
-                    val tintList = android.content.res.ColorStateList(
-                        arrayOf(
-                            intArrayOf(android.R.attr.state_checked),
-                            intArrayOf(-android.R.attr.state_checked)
-                        ),
-                        intArrayOf(palette.accent_1, palette.disabled)
-                    )
-                    view.buttonTintList = tintList
-                }
-
-                else -> {
-                    // Only remap if we recognise the color, don't blindly overwrite
-                    // with foreground, as that would clobber clock/icon/header text colors
-                    val mapped = mapColor(context, view.currentTextColor, palette)
-                    if (mapped != null) view.setTextColor(mapped)
-                }
-            }
-        }
-
-        // Background
-        val currentColor = resolveDrawableColor(view.background ?: return) ?: return
-        val mapped = mapColor(context, currentColor, palette) ?: return
-        view.setBackgroundColor(mapped)
-    }
-
-    /**
-     * Maps a color from any palette to the equivalent slot in [palette].
-     * This works by comparing the incoming color against all known palette
-     * slots across both themes, including the currently-active custom palette.
-     */
-    private fun mapColor(context: Context, color: Int, palette: Palette): Int? {
-        // Also resolve the live custom palette so custom-theme colors survive navigation
-        val custom = buildCustomPalette(context)
-
-        return when (color) {
-            // bg_primary
-            MAKO.bg_1, RAMA.bg_1, CATPPUCCIN_MOCHA.bg_1, CATPPUCCIN_LATTE.bg_1,
-            DRACULA.bg_1, MELANGE.bg_1, TOKYO_NIGHT.bg_1, custom.bg_1,
-            context.resources.getColor(R.color.bg_1) -> palette.bg_1
-
-            // bg_secondary
-            MAKO.bg_2, RAMA.bg_2, CATPPUCCIN_MOCHA.bg_2, CATPPUCCIN_LATTE.bg_2,
-            DRACULA.bg_2, MELANGE.bg_2, TOKYO_NIGHT.bg_2, custom.bg_2,
-            context.resources.getColor(R.color.bg_2) -> palette.bg_2
-
-            // bg_tertiary
-            MAKO.bg_3, RAMA.bg_3, CATPPUCCIN_MOCHA.bg_3, CATPPUCCIN_LATTE.bg_3,
-            DRACULA.bg_3, MELANGE.bg_3, TOKYO_NIGHT.bg_3, custom.bg_3,
-            context.resources.getColor(R.color.bg_3) -> palette.bg_3
-
-            // bg_quaternary
-            MAKO.bg_4, RAMA.bg_4, CATPPUCCIN_MOCHA.bg_4, CATPPUCCIN_LATTE.bg_4,
-            DRACULA.bg_4, MELANGE.bg_4, TOKYO_NIGHT.bg_4, custom.bg_4,
-            context.resources.getColor(R.color.bg_4) -> palette.bg_4
-
-            // bg_display
-            MAKO.bg_display, RAMA.bg_display, CATPPUCCIN_MOCHA.bg_display, CATPPUCCIN_LATTE.bg_display,
-            DRACULA.bg_display, MELANGE.bg_display, TOKYO_NIGHT.bg_display, custom.bg_display,
-            context.resources.getColor(R.color.bg_display) -> palette.bg_display
-
-            // media_background
-            MAKO.media_background, RAMA.media_background, CATPPUCCIN_MOCHA.media_background, CATPPUCCIN_LATTE.media_background,
-            DRACULA.media_background, MELANGE.media_background, TOKYO_NIGHT.media_background, custom.media_background,
-            context.resources.getColor(R.color.media_background) -> palette.media_background
-
-            // button_primary
-            MAKO.button_1, RAMA.button_1, CATPPUCCIN_MOCHA.button_1, CATPPUCCIN_LATTE.button_1,
-            DRACULA.button_1, MELANGE.button_1, TOKYO_NIGHT.button_1, custom.button_1,
-            context.resources.getColor(R.color.button_1) -> palette.button_1
-
-            // button_primary_selected
-            MAKO.button_1_selected, RAMA.button_1_selected, CATPPUCCIN_MOCHA.button_1_selected, CATPPUCCIN_LATTE.button_1_selected,
-            DRACULA.button_1_selected, MELANGE.button_1_selected, TOKYO_NIGHT.button_1_selected, custom.button_1_selected,
-            context.resources.getColor(R.color.button_1_selected) -> palette.button_1_selected
-
-            // button_secondary
-            MAKO.button_2, RAMA.button_2, CATPPUCCIN_MOCHA.button_2, CATPPUCCIN_LATTE.button_2,
-            DRACULA.button_2, MELANGE.button_2, TOKYO_NIGHT.button_2, custom.button_2,
-            context.resources.getColor(R.color.button_2) -> palette.button_2
-
-            // button_danger
-            MAKO.danger, RAMA.danger, CATPPUCCIN_MOCHA.danger, CATPPUCCIN_LATTE.danger,
-            DRACULA.danger, MELANGE.danger, TOKYO_NIGHT.danger, custom.danger,
-            context.resources.getColor(R.color.danger) -> palette.danger
-
-            // input
-            MAKO.input, RAMA.input, CATPPUCCIN_MOCHA.input, CATPPUCCIN_LATTE.input,
-            DRACULA.input, MELANGE.input, TOKYO_NIGHT.input, custom.input,
-            context.resources.getColor(R.color.input) -> palette.input
-
-            // disabled
-            MAKO.disabled, RAMA.disabled, CATPPUCCIN_MOCHA.disabled, CATPPUCCIN_LATTE.disabled,
-            DRACULA.disabled, MELANGE.disabled, TOKYO_NIGHT.disabled, custom.disabled,
-            context.resources.getColor(R.color.disabled) -> palette.disabled
-
-            // accent_1
-            MAKO.accent_1, RAMA.accent_1, CATPPUCCIN_MOCHA.accent_1, CATPPUCCIN_LATTE.accent_1,
-            DRACULA.accent_1, MELANGE.accent_1, TOKYO_NIGHT.accent_1, custom.accent_1,
-            context.resources.getColor(R.color.accent_1) -> palette.accent_1
-
-            // accent_2
-            MAKO.accent_2, RAMA.accent_2, CATPPUCCIN_MOCHA.accent_2, CATPPUCCIN_LATTE.accent_2,
-            DRACULA.accent_2, MELANGE.accent_2, TOKYO_NIGHT.accent_2, custom.accent_2,
-            context.resources.getColor(R.color.accent_2) -> palette.accent_2
-
-            // accent_3
-            MAKO.accent_3, RAMA.accent_3, CATPPUCCIN_MOCHA.accent_3, CATPPUCCIN_LATTE.accent_3,
-            DRACULA.accent_3, MELANGE.accent_3, TOKYO_NIGHT.accent_3, custom.accent_3,
-            context.resources.getColor(R.color.accent_3) -> palette.accent_3
-
-            // accent_4
-            MAKO.accent_4, RAMA.accent_4, CATPPUCCIN_MOCHA.accent_4, CATPPUCCIN_LATTE.accent_4,
-            DRACULA.accent_4, MELANGE.accent_4, TOKYO_NIGHT.accent_4, custom.accent_4,
-            context.resources.getColor(R.color.accent_4) -> palette.accent_4
-
-            // collapsible_header
-            MAKO.collapsible_header, RAMA.collapsible_header, CATPPUCCIN_MOCHA.collapsible_header, CATPPUCCIN_LATTE.collapsible_header,
-            DRACULA.collapsible_header, MELANGE.collapsible_header, TOKYO_NIGHT.collapsible_header, custom.collapsible_header,
-            context.resources.getColor(R.color.collapsible_header) -> palette.collapsible_header
-
-            // h1
-            MAKO.h1, RAMA.h1, CATPPUCCIN_MOCHA.h1, CATPPUCCIN_LATTE.h1,
-            DRACULA.h1, MELANGE.h1, TOKYO_NIGHT.h1, custom.h1,
-            context.resources.getColor(R.color.h1) -> palette.h1
-
-            // foreground
-            MAKO.foreground, RAMA.foreground, CATPPUCCIN_MOCHA.foreground, CATPPUCCIN_LATTE.foreground,
-            DRACULA.foreground, MELANGE.foreground, TOKYO_NIGHT.foreground, custom.foreground,
-            context.resources.getColor(R.color.foreground) -> palette.foreground
-
-            // Progress
-            MAKO.progressbar, RAMA.progressbar, CATPPUCCIN_MOCHA.progressbar, CATPPUCCIN_LATTE.progressbar,
-            DRACULA.progressbar, MELANGE.progressbar, TOKYO_NIGHT.progressbar, custom.progressbar,
-            context.resources.getColor(R.color.progress) -> palette.progressbar
-
-            else -> null
-        }
-    }
 
     private fun resolveDrawableColor(drawable: android.graphics.drawable.Drawable): Int? {
-        return if (drawable is android.graphics.drawable.ColorDrawable) drawable.color else null
+        return if (drawable is ColorDrawable) drawable.color else null
     }
 
     /**

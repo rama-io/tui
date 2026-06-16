@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.IBinder
 import com.rama.tui.activities.MainActivity
 import com.rama.tui.managers.MusicManager
+import com.rama.bohio.R as BohioR
 
 class MediaPlaybackService : Service() {
 
@@ -133,7 +134,7 @@ class MediaPlaybackService : Service() {
 
         builder
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-        builder.setColor(resources.getColor(R.color.media_background))
+        builder.setColor(resources.getColor(BohioR.color.media_background))
             .setContentTitle(track?.title ?: "Not playing")
             .setContentText(track?.displayArtists?.ifEmpty { null } ?: "")
             .setContentIntent(openAppIntent)

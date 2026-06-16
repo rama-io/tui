@@ -20,5 +20,12 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Tui"
+
 include(":app")
- 
+include(":bohio")
+
+// Activate For Release
+//project(":bohio").projectDir = file("bohio")
+
+// Activate For Bohio Development (and locate your local source)
+project(":bohio").projectDir = file("../../git_proj/bohio")

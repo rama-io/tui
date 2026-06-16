@@ -15,7 +15,7 @@ import java.io.File
 import java.io.FileOutputStream
 import com.rama.tui.widgets.WdColorPicker
 import com.rama.tui.widgets.WdRange
-import kotlin.compareTo
+import com.rama.bohio.R as BohioR
 
 class SettingsAppearanceController(private val activity: SettingsActivity) {
 
@@ -243,7 +243,7 @@ class SettingsAppearanceController(private val activity: SettingsActivity) {
             }
         }
 
-        val steps = activity.resources.getStringArray(R.array.ui_scale_steps).toList()
+        val steps = activity.resources.getStringArray(BohioR.array.ui_scale_steps).toList()
         val matchIndex = steps.indexOfFirst { it.toFloatOrNull() == savedScale }
         if (matchIndex >= 0) {
             range.post {

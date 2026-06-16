@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import com.rama.tui.R
+import com.rama.bohio.R as BohioR
 import com.rama.tui.activities.SettingsActivity
 import com.rama.tui.managers.PrefsManager
 
@@ -28,7 +29,7 @@ class SettingsLanguageController(private val activity: SettingsActivity) {
                 id = View.generateViewId()
                 text = label
                 textSize = 16f
-                setTextColor(activity.resources.getColor(R.color.foreground))
+                setTextColor(activity.resources.getColor(BohioR.color.foreground))
                 val params = RadioGroup.LayoutParams(
                     RadioGroup.LayoutParams.MATCH_PARENT,
                     RadioGroup.LayoutParams.WRAP_CONTENT
