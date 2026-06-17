@@ -19,6 +19,7 @@ import android.widget.TextView
 import com.rama.tui.CsActivity
 import com.rama.tui.MediaPlaybackService
 import com.rama.tui.R
+import com.rama.bohio.R as BohioR
 import com.rama.tui.TrackAdapter
 import com.rama.tui.managers.MusicManager
 
@@ -224,8 +225,8 @@ class MainActivity : CsActivity() {
 
     private fun refreshUi() {
         playPauseIcon.setImageResource(
-            if (MusicManager.isPlaying) R.drawable.icon_pause_circle
-            else R.drawable.icon_play_circle
+            if (MusicManager.isPlaying) BohioR.drawable.px_pause_circle
+            else BohioR.drawable.px_play_circle
         )
         repeatIcon.alpha = if (MusicManager.isRepeat) 1f else 0.7f
 

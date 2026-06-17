@@ -25,7 +25,7 @@
                 android:layout_gravity="center"
                 android:layout_width="24sp"
                 android:layout_height="24sp"
-                android:src="@drawable/icon_search"
+                android:src="@drawable/px_search"
                 android:tint="@color/foreground" />
         </FrameLayout>
 
@@ -45,11 +45,9 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:layout_gravity="center"
-                android:layout_width="24sp"
-                android:layout_height="24sp"
-                android:src="@drawable/icon_close"
-                android:tint="@color/foreground" />
+                android:src="@drawable/px_times"
+                android:tint="@color/foreground"
+                style="@style/Icon24" />
         </FrameLayout>
 
         <FrameLayout
@@ -59,7 +57,7 @@
             android:padding="12sp">
 
             <ImageView
-                android:src="@drawable/icon_cog"
+                android:src="@drawable/px_cog"
                 android:tint="@color/foreground"
                 android:contentDescription="@string/altdescr_open_settings"
                 style="@style/Icon24" />
@@ -119,7 +117,7 @@
                 android:layout_gravity="center"
                 android:layout_width="28sp"
                 android:layout_height="28sp"
-                android:src="@drawable/icon_repeat_solid"
+                android:src="@drawable/px_repeat"
                 android:tint="@color/foreground" />
         </FrameLayout>
 
@@ -133,7 +131,7 @@
                 android:layout_gravity="center"
                 android:layout_width="36sp"
                 android:layout_height="36sp"
-                android:src="@drawable/icon_prev"
+                android:src="@drawable/px_prev"
                 android:tint="@color/foreground" />
         </FrameLayout>
 
@@ -147,7 +145,7 @@
                 android:layout_gravity="center"
                 android:layout_width="42sp"
                 android:layout_height="42sp"
-                android:src="@drawable/icon_play_circle"
+                android:src="@drawable/px_play_circle"
                 android:tint="@color/foreground" />
         </FrameLayout>
 
@@ -161,7 +159,7 @@
                 android:layout_gravity="center"
                 android:layout_width="36sp"
                 android:layout_height="36sp"
-                android:src="@drawable/icon_next"
+                android:src="@drawable/px_next"
                 android:tint="@color/foreground" />
         </FrameLayout>
 
@@ -175,7 +173,7 @@
                 android:layout_gravity="center"
                 android:layout_width="28sp"
                 android:layout_height="28sp"
-                android:src="@drawable/icon_shuffle"
+                android:src="@drawable/px_shuffle"
                 android:tint="@color/foreground" />
         </FrameLayout>
     </LinearLayout>

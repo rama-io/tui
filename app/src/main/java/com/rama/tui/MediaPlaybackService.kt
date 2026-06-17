@@ -140,13 +140,13 @@ class MediaPlaybackService : Service() {
             .setContentIntent(openAppIntent)
             .setOngoing(true)
             .setShowWhen(false)
-            .addAction(R.drawable.icon_prev, "Previous", actionIntent(ACTION_PREV, 1))
+            .addAction(BohioR.drawable.px_prev, "Previous", actionIntent(ACTION_PREV, 1))
             .addAction(
-                if (isPlaying) R.drawable.icon_pause else R.drawable.icon_play,
+                if (isPlaying) BohioR.drawable.px_pause else BohioR.drawable.px_play,
                 if (isPlaying) "Pause" else "Play",
                 actionIntent(ACTION_PLAY_PAUSE, 2)
             )
-            .addAction(R.drawable.icon_next, "Next", actionIntent(ACTION_NEXT, 3))
+            .addAction(BohioR.drawable.px_next, "Next", actionIntent(ACTION_NEXT, 3))
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             builder.setStyle(

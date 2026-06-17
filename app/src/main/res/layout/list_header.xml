@@ -7,7 +7,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:src="@drawable/icon_folder_solid"
+            android:src="@drawable/px_folder"
             android:tint="@color/foreground"
             android:contentDescription="@string/altdescr_folder"
             style="@style/Icon18" />

@@ -252,7 +252,7 @@ class SettingsAppearanceController(private val activity: SettingsActivity) {
         val matchIndex = steps.indexOfFirst { it.toFloatOrNull() == savedScale }
         if (matchIndex >= 0) {
             range.post {
-                val container = range.findViewById<android.widget.LinearLayout>(R.id.container)
+                val container = range.findViewById<android.widget.LinearLayout>(BohioR.id.container)
                 (container?.getChildAt(matchIndex) as? android.widget.Button)?.performClick()
             }
         }

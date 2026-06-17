@@ -11,7 +11,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:src="@drawable/icon_disc"
+            android:src="@drawable/px_disc"
             android:tint="@color/accent_4"
             style="@style/Icon32" />
     </FrameLayout>
