@@ -44,7 +44,7 @@ android {
         create("beta") {
             applicationIdSuffix = ".beta"
             versionNameSuffix = "-beta"
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             signingConfig = signingConfigs.getByName("debug")
         }
         debug {
