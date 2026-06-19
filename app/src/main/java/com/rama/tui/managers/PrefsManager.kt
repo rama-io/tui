@@ -6,11 +6,6 @@ import com.rama.bohio.objects.PrefTheme
 import com.rama.bohio.managers.PrefsManager as BohioPrefsManager
 import com.rama.tui.PrefSortStyle
 
-/**
- * local-specific preferences — extends bohio's shared [BohioPrefsManager] with
- * All shared keys, getters, setters, export/import/clear logic, etc. are
- * inherited from [BohioPrefsManager] and accessible directly.
- */
 class PrefsManager private constructor(context: Context) : BohioPrefsManager(context) {
 
     override val defaultTheme: String = PrefTheme.TEYIN
@@ -60,9 +55,7 @@ class PrefsManager private constructor(context: Context) : BohioPrefsManager(con
             INSTANCE ?: synchronized(this) {
                 INSTANCE ?: PrefsManager(context.applicationContext).also {
                     INSTANCE = it
-                    // Register with bohio so FontManager / ThemeManager can resolve prefs
-                    // without depending on the app-specific subclass.
-                    BohioPrefsManager.register(it)
+                    register(it)
                 }
             }
     }
