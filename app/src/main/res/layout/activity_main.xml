@@ -22,11 +22,9 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:layout_gravity="center"
-                android:layout_width="24sp"
-                android:layout_height="24sp"
                 android:src="@drawable/px_search"
-                android:tint="@color/foreground" />
+                android:tint="@color/foreground"
+                style="@style/Icon24" />
         </FrameLayout>
 
         <EditText
@@ -53,7 +51,7 @@
         <FrameLayout
             android:id="@+id/open_settings"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:padding="12sp">
 
             <ImageView
