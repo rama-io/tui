@@ -1,5 +1,9 @@
 # Changelog
 
+## 5
+
+- Migrate common assets to Bohío
+
 ## 4
 
 - Fix media and storage permissions for API 21

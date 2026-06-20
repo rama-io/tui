@@ -8,7 +8,7 @@ import com.rama.tui.PrefSortStyle
 
 class PrefsManager private constructor(context: Context) : BohioPrefsManager(context) {
 
-    override val defaultTheme: String = PrefTheme.TEYIN
+    override val defaultTheme: String = PrefTheme.TOKYO_NIGHT
 
     // Local preference keys
     object FileKeys {
