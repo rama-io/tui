@@ -72,11 +72,17 @@ Permissions can be granted from **Settings → System** inside the app if they w
 
 ## Tested Devices
 
-| Device       | OS         | Year | Status     |
-|--------------|------------|------|------------|
-| Pixel 8 Pro  | Android 16 | 2026 | ✅ Verified |
-| Pixel 6      | GrapheneOS | 2026 | ✅ Verified |
-| Samsung On 5 | Android 6  | 2015 | ✅ Verified |
+| Device | Discover Music | Play | Rename | Remove Metadata | Delete Files |
+| - | - | - | - | - | - |
+| Pixel 9 Pro Fold / API 36 | Y | Y | Y | Y | Y |
+| Pixel 9 / API 35 | Y | Y | Y | Y | Y |
+| Pixel 8 / API 34 | Y | Y | Y | Y | Y |
+| Pixel 7 / API 33 | Y | Y | Y | Y | Y |
+| Pixel 6 / API 31 | Y | Y | Y | Y | Y |
+| Pixel 4 / API 29 | Y | Y | N | N | N |
+| Pixel 2 / API 27 | Y | Y | Y | Y | Y |
+| Pixel / API 25 | Y | Y | Y | N | Y |
+| Nexus 5 / API 21 | Y | Y | Y | N | Y |
 
 ---
 
