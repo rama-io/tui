@@ -98,6 +98,10 @@ object MusicManager {
         mediaSession = null
     }
 
+    fun getSessionToken(): android.media.session.MediaSession.Token? {
+        return mediaSession?.sessionToken
+    }
+
     private fun updatePlaybackState() {
         val state =
             if (isPlaying) PlaybackState.STATE_PLAYING else PlaybackState.STATE_PAUSED

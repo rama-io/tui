@@ -152,6 +152,7 @@ class MediaPlaybackService : Service() {
             builder.setStyle(
                 Notification.MediaStyle()
                     .setShowActionsInCompactView(0, 1, 2)
+                    .setMediaSession(MusicManager.getSessionToken())
             )
             builder.setVisibility(Notification.VISIBILITY_PUBLIC)
         }

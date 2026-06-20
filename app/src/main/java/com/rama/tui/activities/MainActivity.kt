@@ -10,6 +10,7 @@ import android.os.Environment
 import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.KeyEvent
 import android.view.View
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -246,5 +247,27 @@ class MainActivity : CsActivity() {
             progressBg.layoutParams.width = (parent.width * progress).toInt()
             progressBg.requestLayout()
         }
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (event.action == KeyEvent.ACTION_UP) {
+            when (event.keyCode) {
+                KeyEvent.KEYCODE_MEDIA_PLAY,
+                KeyEvent.KEYCODE_MEDIA_PAUSE,
+                KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
+                    MusicManager.togglePlayPause()
+                    return true
+                }
+                KeyEvent.KEYCODE_MEDIA_NEXT -> {
+                    MusicManager.next()
+                    return true
+                }
+                KeyEvent.KEYCODE_MEDIA_PREVIOUS -> {
+                    MusicManager.prev()
+                    return true
+                }
+            }
+        }
+        return super.dispatchKeyEvent(event)
     }
 }
