@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Environment
 import android.media.session.MediaSession
 import android.media.session.PlaybackState
+import android.provider.MediaStore
 import com.rama.tui.MediaButtonReceiver
 import com.rama.tui.MediaPlaybackService
 import com.rama.tui.managers.PrefsManager.PrefSortStyle
@@ -200,13 +201,19 @@ object MusicManager {
 
     fun loadTracks(context: Context): Boolean {
         if (!hasPermission(context)) return false
+        appContext = context.applicationContext
         val prefs = PrefsManager.getInstance(context)
         val sortStyle =
             prefs.getString(PrefsManager.FileKeys.LIST_SORT_STYLE, PrefSortStyle.AZ)
         val keepTogether = prefs.getBoolean(PrefsManager.FileKeys.LIST_SORT_KEEP_TOGETHER, false)
 
-        val dirs = getStorageRoots(context)
-        val raw = dirs.flatMap { scanDir(it) }
+        // API 29 (Android 10): scoped storage blocks File.listFiles() on external storage
+        // even with READ_EXTERNAL_STORAGE granted. Use MediaStore instead.
+        val raw = if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+            scanViaMediaStore(context)
+        } else {
+            getStorageRoots(context).flatMap { scanDir(it) }
+        }
 
         // Persist the full folder list before filtering so settings can always show all folders
         val allFolders = raw.mapNotNull { it.file.parent }.distinct().sorted().toSet()
@@ -260,6 +267,61 @@ object MusicManager {
         }
     }
 
+    // API 29 only: READ_EXTERNAL_STORAGE is granted but File.listFiles() is blocked by scoped
+    // storage. Query MediaStore instead, which respects the permission correctly on this API level.
+    private fun scanViaMediaStore(context: Context): List<Track> {
+        val results = mutableListOf<Track>()
+
+        val projection = arrayOf(
+            MediaStore.Audio.Media._ID,
+            MediaStore.Audio.Media.DATA,
+            MediaStore.Audio.Media.TITLE,
+            MediaStore.Audio.Media.ARTIST,
+        )
+        val selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0"
+
+        context.contentResolver.query(
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+            projection,
+            selection,
+            null,
+            "${MediaStore.Audio.Media.TITLE} ASC"
+        )?.use { cursor ->
+            val idCol    = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
+            val dataCol  = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
+            val titleCol = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
+            val artistCol= cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
+
+            while (cursor.moveToNext()) {
+                val id   = cursor.getLong(idCol)
+                val path = cursor.getString(dataCol) ?: continue
+                val file = File(path)
+
+                // Build a content:// URI for this track — required for MediaPlayer.setDataSource()
+                // on API 29 since raw file path access is blocked by scoped storage.
+                val uri = android.content.ContentUris.withAppendedId(
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id
+                )
+
+                val base = Track.fromFile(file)
+                val msTitle  = cursor.getString(titleCol)?.takeIf { it.isNotBlank() }
+                val msArtist = cursor.getString(artistCol)
+                    ?.takeIf { it.isNotBlank() && it != "<unknown>" }
+                results.add(
+                    if (msTitle != null || msArtist != null) {
+                        base.copy(
+                            title      = msTitle ?: base.title,
+                            artists    = if (msArtist != null) listOf(msArtist) else base.artists,
+                            contentUri = uri,
+                        )
+                    } else base.copy(contentUri = uri)
+                )
+            }
+        }
+
+        return results
+    }
+
     private fun getStorageRoots(context: Context): List<File> {
         val roots = mutableListOf<File>()
 
@@ -306,10 +368,19 @@ object MusicManager {
     fun play(index: Int = currentIndex) {
         if (tracks.isEmpty() || index !in tracks.indices) return
         currentIndex = index
+        val track = tracks[index]
 
         player?.release()
         player = MediaPlayer().apply {
-            setDataSource(tracks[index].file.absolutePath)
+            // API 29: raw file path access is blocked by scoped storage even with
+            // READ_EXTERNAL_STORAGE granted. Use the content:// URI from MediaStore instead.
+            if (track.contentUri != null) {
+                appContext!!.contentResolver.openFileDescriptor(track.contentUri, "r")
+                    ?.use { pfd -> setDataSource(pfd.fileDescriptor) }
+                    ?: throw java.io.IOException("Could not open URI: ${track.contentUri}")
+            } else {
+                setDataSource(track.file.absolutePath)
+            }
             setOnCompletionListener { onTrackFinished() }
             prepare()
             start()
