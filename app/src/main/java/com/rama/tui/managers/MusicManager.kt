@@ -180,6 +180,14 @@ object MusicManager {
         if (context == null) return false
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true
 
+        // Android 11+ (API 30+): MANAGE_EXTERNAL_STORAGE is required for broad filesystem access
+        // (needed to list arbitrary dirs and rename files on SD card).
+        // READ_EXTERNAL_STORAGE alone is not sufficient on Android 10-12.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return Environment.isExternalStorageManager()
+        }
+
+        // Android 13+ (API 33+): granular media permission replaces READ_EXTERNAL_STORAGE
         val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             Manifest.permission.READ_MEDIA_AUDIO
         else

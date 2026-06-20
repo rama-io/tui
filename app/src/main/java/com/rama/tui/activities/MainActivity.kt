@@ -149,22 +149,8 @@ class MainActivity : CsActivity() {
 
     private fun loadOrRequestTracks() {
         when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !MusicManager.hasPermission(this) -> {
-                val permissions = when {
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ->
-                        arrayOf(Manifest.permission.READ_MEDIA_AUDIO)
-
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ->
-                        arrayOf(
-                            Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        )
-
-                    else -> emptyArray()
-                }
-                requestPermissions(permissions, REQ_AUDIO)
-            }
-
+            // Android 11+ (API 30+): need MANAGE_EXTERNAL_STORAGE for SD card access & renaming.
+            // Skip READ_EXTERNAL_STORAGE on these versions — it can't list arbitrary dirs anyway.
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
                     !Environment.isExternalStorageManager() -> {
                 val intent = Intent(
@@ -172,6 +158,18 @@ class MainActivity : CsActivity() {
                     Uri.parse("package:${packageName}")
                 )
                 startActivityForResult(intent, REQ_MANAGE)
+            }
+
+            // Android 6–10 (API 23–29): need READ_EXTERNAL_STORAGE (and WRITE for renaming).
+            // READ_MEDIA_AUDIO doesn't exist yet; READ_EXTERNAL_STORAGE covers listing.
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !MusicManager.hasPermission(this) -> {
+                requestPermissions(
+                    arrayOf(
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    ),
+                    REQ_AUDIO
+                )
             }
 
             else -> loadTracks()
@@ -197,7 +195,13 @@ class MainActivity : CsActivity() {
     ) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQ_MANAGE) {
-            loadTracks()
+            // Only proceed if the user actually granted All Files Access.
+            // If they denied/dismissed, show the request again so the app doesn't silently load nothing.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager()) {
+                loadTracks()
+            } else {
+                loadOrRequestTracks()
+            }
         }
         if (requestCode == REQ_SETTINGS && resultCode == RESULT_OK) {
             (listView.adapter as? TrackAdapter)?.updateTracks(MusicManager.tracks)

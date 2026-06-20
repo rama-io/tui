@@ -3,6 +3,8 @@
 ## 5
 
 - Migrate common assets to Bohío
+- Fix media finder on API 31 (Android 12)
+- Fix media controllers on headset
 
 ## 4
 
