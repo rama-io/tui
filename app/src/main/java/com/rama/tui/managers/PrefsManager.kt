@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.rama.bohio.objects.PrefTheme
 import com.rama.bohio.managers.PrefsManager as BohioPrefsManager
-import com.rama.tui.PrefSortStyle
 
 class PrefsManager private constructor(context: Context) : BohioPrefsManager(context) {
 
@@ -19,6 +18,11 @@ class PrefsManager private constructor(context: Context) : BohioPrefsManager(con
         const val ALL_FOLDERS = "folders:all"
         const val SETTINGS_SECTION_LIST = "settings:section:list"
         const val SETTINGS_SECTION_FOLDERS = "settings:section:folders"
+    }
+
+    object PrefSortStyle {
+        val AZ = "az"
+        val ZA = "za"
     }
 
     // Local InitPrefs

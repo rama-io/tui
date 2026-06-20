@@ -4,7 +4,7 @@ import android.widget.RadioGroup
 import com.rama.tui.R
 import com.rama.tui.activities.SettingsActivity
 import com.rama.tui.managers.PrefsManager.FileKeys
-import com.rama.tui.PrefSortStyle
+import com.rama.tui.managers.PrefsManager.PrefSortStyle
 
 class SettingsListController(private val activity: SettingsActivity) {
 

@@ -12,7 +12,7 @@ import android.media.session.MediaSession
 import android.media.session.PlaybackState
 import com.rama.tui.MediaButtonReceiver
 import com.rama.tui.MediaPlaybackService
-import com.rama.tui.PrefSortStyle
+import com.rama.tui.managers.PrefsManager.PrefSortStyle
 import com.rama.tui.Track
 import java.io.File
 
