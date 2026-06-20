@@ -72,17 +72,17 @@ Permissions can be granted from **Settings → System** inside the app if they w
 
 ## Tested Devices
 
-| Device | Discover Music | Play | Rename | Remove Metadata | Delete Files |
-| - | - | - | - | - | - |
-| Pixel 9 Pro Fold / API 36 | Y | Y | Y | Y | Y |
-| Pixel 9 / API 35 | Y | Y | Y | Y | Y |
-| Pixel 8 / API 34 | Y | Y | Y | Y | Y |
-| Pixel 7 / API 33 | Y | Y | Y | Y | Y |
-| Pixel 6 / API 31 | Y | Y | Y | Y | Y |
-| Pixel 4 / API 29 | Y | Y | N | N | N |
-| Pixel 2 / API 27 | Y | Y | Y | Y | Y |
-| Pixel / API 25 | Y | Y | Y | N | Y |
-| Nexus 5 / API 21 | Y | Y | Y | N | Y |
+| Device | Version | Discover Music | Play | Rename | Remove Metadata | Delete Files |
+| - | - | - | - | - | - | - |
+| Pixel 9 Pro Fold | Android 16 / API 36 | Y | Y | Y | Y | Y |
+| Pixel 9 | Android 15 / API 35 | Y | Y | Y | Y | Y |
+| Pixel 8 | Android 14 / API 34 | Y | Y | Y | Y | Y |
+| Pixel 7 | Android 13 / API 33 | Y | Y | Y | Y | Y |
+| Pixel 6 | Android 12 / API 31 | Y | Y | Y | Y | Y |
+| Pixel 4 | Android 10 / API 29 | Y | Y | N | N | N |
+| Pixel 2 | Android 8 / API 27 | Y | Y | Y | Y | Y |
+| Pixel | Android 7 / API 25 | Y | Y | Y | N | Y |
+| Nexus 5 | Android 5 / API 21 | Y | Y | Y | N | Y |
 
 ---
 
