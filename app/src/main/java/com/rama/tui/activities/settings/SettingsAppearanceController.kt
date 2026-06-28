@@ -138,6 +138,8 @@ class SettingsAppearanceController(private val activity: SettingsActivity) {
             PrefTheme.DRACULA -> group.check(R.id.theme_dracula)
             PrefTheme.MELANGE -> group.check(R.id.theme_melange)
             PrefTheme.TOKYO_NIGHT -> group.check(R.id.theme_tokyo_night)
+            PrefTheme.MONO_DARK -> group.check(R.id.theme_mono_dark)
+            PrefTheme.MONO_LIGHT -> group.check(R.id.theme_mono_light)
             PrefTheme.CUSTOM -> group.check(R.id.theme_custom)
             else -> group.check(R.id.theme_teyin)
         }
@@ -152,6 +154,8 @@ class SettingsAppearanceController(private val activity: SettingsActivity) {
                 R.id.theme_dracula -> PrefTheme.DRACULA
                 R.id.theme_melange -> PrefTheme.MELANGE
                 R.id.theme_tokyo_night -> PrefTheme.TOKYO_NIGHT
+                R.id.theme_mono_dark -> PrefTheme.MONO_DARK
+                R.id.theme_mono_light -> PrefTheme.MONO_LIGHT
                 R.id.theme_custom -> PrefTheme.CUSTOM
                 else -> PrefTheme.TEYIN
             }

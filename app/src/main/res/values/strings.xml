@@ -1,40 +1,19 @@
 <resources>
-    <!-- Activities -->
-    <string name="activity_settings_label">Settings</string>
-    <string name="activity_about_label">About</string>
-
     <!-- Heading -->
     <string name="h2_title_edit_track">Edit track</string>
-    <string name="h2_color_picker">Pick a Color</string>
-    <string name="h2_icons">Icons</string>
-    <string name="h2_fonts">Fonts</string>
-    <string name="h2_themes">Themes</string>
-    <string name="h2_language">Language</string>
-    <string name="h2_system">System</string>
-    <string name="h2_app">App</string>
     <string name="h2_list">List</string>
 
     <!-- Button -->
-    <string name="btn_go_back">Go Back</string>
-    <string name="btn_apply">Apply</string>
     <string name="btn_about_tui">About Tui</string>
-    <string name="btn_cancel">Cancel</string>
-    <string name="btn_join_discord">Join Discord</string>
-    <string name="btn_theme_apply_custom">Apply Custom Theme</string>
-    <string name="btn_font_custom_pick">Choose Font file</string>
 
     <!-- Radio -->
     <string name="radio_default_system">Default (System)</string>
-    <string name="radio_language_system_default">System Default (fallback to English)</string>
-    <string name="radio_language_english" translatable="false">English</string>
-    <string name="radio_font_custom">Custom font</string>
-    <string name="radio_theme_custom">Custom</string>
     <string name="radio_sort_a_z">Sort a-z</string>
     <string name="radio_sort_z_a">Sort z-a</string>
 
     <!-- Checkbox -->
-    <string name="checkbox_show_system_bar">Show system bar</string>
     <string name="checkbox_lock_screen_from_falling_asleep">Keep screen awake</string>
+    <string name="checkbox_keep_files_from_the_same_folder_together">Keep files from the same folder together</string>
 
     <!-- InputLabel -->
     <string name="label_track_title">Title</string>
@@ -43,7 +22,6 @@
     <string name="label_track_languages">Languages :: ISO 639 (Comma Separated)</string>
     <string name="label_track_summary">Summary</string>
     <string name="label_track_metadata">Metadata</string>
-    <string name="label_zoom">Zoom</string>
 
     <!-- InputHints -->
     <string name="hint_filter_tracks">Search…</string>
@@ -57,12 +35,8 @@
     <string name="btn_delete_track">Delete track</string>
     <string name="btn_update_track">Update track</string>
 
-    <!-- Toasts -->
-    <string name="toast_invalid_color">Invalid color</string>
-
     <!-- AltDescription -->
     <string name="altdescr_open_settings">Open Settings</string>
-    <string name="altdescr_lock_icon">Lock screen</string>
     <string name="altdescr_home_nav">Home</string>
     <string name="altdescr_stopwatch_nav">Stopwatch</string>
     <string name="altdescr_timer_nav">Timer</string>
@@ -82,13 +56,5 @@
     <!-- APP -->
     <string name="app_name" translatable="false">@string/product_tui</string>
     <string name="app_desc">A minimal, privacy-first local music player that skips metadata entirely. What you see is exactly what you name, no hidden tags, no surprises.</string>
-    <string name="app_background_tasks_desc">No Background Tasks</string>
-    <string name="app_ads_desc">No Ads</string>
-    <string name="app_trackers_desc">No Trackers</string>
-    <string name="app_offline_desc">Works Offline</string>
-
-    <!-- Custom Blocks -->
-    <string name="checkbox_keep_files_from_the_same_folder_together">Keep files from the same folder together</string>
-
 </resources>
 
