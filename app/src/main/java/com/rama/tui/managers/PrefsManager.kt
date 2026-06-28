@@ -2,6 +2,7 @@ package com.rama.tui.managers
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.rama.bohio.objects.PrefKeys
 import com.rama.bohio.objects.PrefTheme
 import com.rama.bohio.managers.PrefsManager as BohioPrefsManager
 
@@ -16,8 +17,6 @@ class PrefsManager private constructor(context: Context) : BohioPrefsManager(con
         const val SD_TREE_URI = "storage:sd_tree_uri"
         const val DISABLED_FOLDERS = "folders:disabled"
         const val ALL_FOLDERS = "folders:all"
-        const val SETTINGS_SECTION_LIST = "settings:section:list"
-        const val SETTINGS_SECTION_FOLDERS = "settings:section:folders"
     }
 
     object PrefSortStyle {
@@ -29,8 +28,8 @@ class PrefsManager private constructor(context: Context) : BohioPrefsManager(con
     override fun applyAppDefaults(editor: SharedPreferences.Editor) {
         editor.putString(FileKeys.LIST_SORT_STYLE, PrefSortStyle.AZ)
         editor.putBoolean(FileKeys.LIST_SORT_KEEP_TOGETHER, false)
-        editor.putBoolean(FileKeys.SETTINGS_SECTION_LIST, true)
-        editor.putBoolean(FileKeys.SETTINGS_SECTION_FOLDERS, true)
+        editor.putBoolean(PrefKeys.SETTINGS_SECTION_LIST, true)
+        editor.putBoolean(PrefKeys.SETTINGS_SECTION_FOLDERS, true)
     }
 
     fun getDisabledFolders(): Set<String> {

@@ -70,7 +70,7 @@ Permissions can be granted from **Settings → System** inside the app if they w
 
 ---
 
-## Tested Devices
+## Tests
 
 | Device | Version | Discover Music | Play | Rename | Remove Metadata | Delete Files |
 | - | - | - | - | - | - | - |
