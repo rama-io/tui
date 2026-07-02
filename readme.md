@@ -49,15 +49,15 @@ Permissions can be granted from **Settings → System** inside the app if they w
 
 <p>
   <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/rama-io/tui">
-    <img src="https://rama-io.github.io/img/obtainium.png" alt="Get tui From Obtainium">
+    <img src="https://rama-io.github.io/img/obtainium.svg" alt="Get tui From Obtainium">
   </a>
   &nbsp;
   <a href="https://f-droid.org/app/com.rama.tui">
-    <img src="https://rama-io.github.io/img/fdroid.png" alt="Get tui From F-Droid">
+    <img src="https://rama-io.github.io/img/fdroid.svg" alt="Get tui From F-Droid">
   </a>
   &nbsp;
   <a href="https://github.com/rama-io/tui/releases/latest">
-    <img src="https://rama-io.github.io/img/github.png" alt="Get tui From GitHub">
+    <img src="https://rama-io.github.io/img/github.svg" alt="Get tui From GitHub">
   </a>
 </p>
 
