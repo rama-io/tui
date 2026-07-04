@@ -5,20 +5,6 @@ import androidx.room.PrimaryKey
 import com.rama.tui.Track
 import java.io.File
 
-/**
- * Cached, on-disk copy of everything expensive to (re)compute for a track: the parsed
- * filename fields and, most importantly, the probed duration (which requires an actual
- * MediaMetadataRetriever call — a real decoder touch, not just a stat()).
- *
- * [size] and [lastModified] are the file's fingerprint: if both match what's on disk, we
- * reuse this row as-is and skip re-probing. If either differs (or the row doesn't exist
- * yet), the file is re-parsed and re-probed. See MusicManager.syncTracks().
- *
- * [durationMs] is null when the file could not be read at all (unsupported codec/container,
- * corrupt file, etc). Rows with a null duration are kept in the DB (so we don't keep
- * re-probing a file we already know is unplayable) but are filtered out of the track list
- * shown to the user.
- */
 @Entity(tableName = "tracks")
 data class TrackEntity(
     @PrimaryKey val path: String,
