@@ -5,6 +5,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioManager
+import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Environment
@@ -13,8 +14,15 @@ import android.media.session.PlaybackState
 import android.provider.MediaStore
 import com.rama.tui.MediaButtonReceiver
 import com.rama.tui.MediaPlaybackService
+import com.rama.tui.db.AppDatabase
+import com.rama.tui.db.TrackEntity
 import com.rama.tui.managers.PrefsManager.PrefSortStyle
 import com.rama.tui.Track
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import android.media.MediaMetadata
 
@@ -24,6 +32,10 @@ object MusicManager {
     private var mediaSession: MediaSession? = null
     private var audioFocusRequest: android.media.AudioFocusRequest? = null
     private var appContext: Context? = null
+
+    // MusicManager is a singleton with no lifecycle of its own, so it gets its own long-lived
+    // scope for the scan/DB-sync work rather than borrowing an Activity's lifecycleScope.
+    private val managerScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     var tracks: List<Track> = emptyList()
         private set
@@ -215,34 +227,50 @@ object MusicManager {
 
     // region Track Loading
 
-    fun loadTracks(context: Context): Boolean {
-        if (!hasPermission(context)) return false
-        appContext = context.applicationContext
-        val prefs = PrefsManager.getInstance(context)
-        val sortStyle =
-            prefs.getString(PrefsManager.FileKeys.LIST_SORT_STYLE, PrefSortStyle.AZ)
-        val keepTogether = prefs.getBoolean(PrefsManager.FileKeys.LIST_SORT_KEEP_TOGETHER, false)
-
-        // API 29 (Android 10): scoped storage blocks File.listFiles() on external storage
-        // even with READ_EXTERNAL_STORAGE granted. Use MediaStore instead.
-        val raw = if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-            scanViaMediaStore(context)
-        } else {
-            getStorageRoots(context).flatMap { scanDir(it) }
+    /**
+     * Scans (or, on non-Q API levels, DB-syncs) the library and updates [tracks]/[allTracks].
+     * Runs the filesystem walk, duration probing and DB work off the main thread; [onComplete]
+     * fires on the main thread once [tracks] has been updated, so callers can safely refresh
+     * their adapter/UI from it. Defaults to a no-op for call sites that don't need to react.
+     */
+    fun loadTracks(context: Context, onComplete: (Boolean) -> Unit = {}) {
+        if (!hasPermission(context)) {
+            onComplete(false)
+            return
         }
+        appContext = context.applicationContext
+        val appCtx = appContext!!
 
-        // Persist the full folder list before filtering so settings can always show all folders
-        val allFolders = raw.mapNotNull { it.file.parent }.distinct().sorted().toSet()
-        prefs.setAllFolders(allFolders)
+        managerScope.launch {
+            val prefs = PrefsManager.getInstance(appCtx)
+            val sortStyle =
+                prefs.getString(PrefsManager.FileKeys.LIST_SORT_STYLE, PrefSortStyle.AZ)
+            val keepTogether =
+                prefs.getBoolean(PrefsManager.FileKeys.LIST_SORT_KEEP_TOGETHER, false)
 
-        val disabledFolders = prefs.getDisabledFolders()
-        val filtered = if (disabledFolders.isEmpty()) raw
-        else raw.filter { it.file.parent !in disabledFolders }
+            // API 29 (Android 10): scoped storage blocks File.listFiles() on external storage
+            // even with READ_EXTERNAL_STORAGE granted. Use MediaStore instead.
+            val raw = if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+                scanViaMediaStore(appCtx)
+            } else {
+                syncTracks(appCtx, getStorageRoots(appCtx))
+            }
 
-        allTracks = sortTracks(filtered, sortStyle, keepTogether)
-        tracks = allTracks
-        if (tracks.isNotEmpty() && currentIndex < 0) currentIndex = 0
-        return true
+            // Persist the full folder list before filtering so settings can always show all folders
+            val allFolders = raw.mapNotNull { it.file.parent }.distinct().sorted().toSet()
+            prefs.setAllFolders(allFolders)
+
+            val disabledFolders = prefs.getDisabledFolders()
+            val filtered = if (disabledFolders.isEmpty()) raw
+            else raw.filter { it.file.parent !in disabledFolders }
+
+            withContext(Dispatchers.Main) {
+                allTracks = sortTracks(filtered, sortStyle, keepTogether)
+                tracks = allTracks
+                if (tracks.isNotEmpty() && currentIndex < 0) currentIndex = 0
+                onComplete(true)
+            }
+        }
     }
 
     fun reSort(context: Context) {
@@ -293,6 +321,7 @@ object MusicManager {
             MediaStore.Audio.Media.DATA,
             MediaStore.Audio.Media.TITLE,
             MediaStore.Audio.Media.ARTIST,
+            MediaStore.Audio.Media.DURATION,
         )
         val selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0"
 
@@ -307,11 +336,18 @@ object MusicManager {
             val dataCol  = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
             val titleCol = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
             val artistCol= cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
+            val durationCol = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
 
             while (cursor.moveToNext()) {
                 val id   = cursor.getLong(idCol)
                 val path = cursor.getString(dataCol) ?: continue
                 val file = File(path)
+
+                // MediaStore already indexes duration for anything it considers valid audio, so
+                // there's no need for a separate MediaMetadataRetriever probe on this API path.
+                // A null/zero duration here means MediaStore itself couldn't read the file —
+                // same "unplayable" signal we use elsewhere — so skip it.
+                val durationMs = cursor.getLong(durationCol).takeIf { it > 0 } ?: continue
 
                 // Build a content:// URI for this track — required for MediaPlayer.setDataSource()
                 // on API 29 since raw file path access is blocked by scoped storage.
@@ -329,8 +365,9 @@ object MusicManager {
                             title      = msTitle ?: base.title,
                             artists    = if (msArtist != null) listOf(msArtist) else base.artists,
                             contentUri = uri,
+                            durationMs = durationMs,
                         )
-                    } else base.copy(contentUri = uri)
+                    } else base.copy(contentUri = uri, durationMs = durationMs)
                 )
             }
         }
@@ -359,24 +396,81 @@ object MusicManager {
         return roots.distinct().filter { it.exists() && it.isDirectory }
     }
 
-    private fun scanDir(dir: File): List<Track> {
-        val results = mutableListOf<Track>()
+    // Attempts to read the file's duration. This doubles as the "can this actually be played"
+    // check: Android has no container parser at all for formats like wma/ape/wv/tta/dsf/dff, so
+    // MediaMetadataRetriever fails on them exactly as MediaPlayer would. A non-null result here
+    // isn't an absolute playback guarantee for every conceivable format (e.g. an ALAC track
+    // inside a valid MP4 container would still report a duration on API < 24, even though the
+    // ALAC decoder itself isn't available until API 24) but it's an accurate signal for the
+    // formats currently in Track.AUDIO_EXTENSIONS.
+    private fun probeDuration(file: File): Long? {
+        val mmr = MediaMetadataRetriever()
+        return try {
+            mmr.setDataSource(file.absolutePath)
+            mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull()
+                ?.takeIf { it > 0 }
+        } catch (e: Exception) {
+            null
+        } finally {
+            // release(), not close() — MediaMetadataRetriever only implements
+            // Closeable/AutoCloseable from API 29 onward.
+            mmr.release()
+        }
+    }
+
+    /**
+     * Walks [roots] on disk and reconciles the result against the cached [TrackEntity] table:
+     * unchanged files (same size + lastModified as the cached row) are reused as-is with no
+     * re-probing; new or modified files are re-parsed and re-probed for duration; DB rows for
+     * files that no longer exist are deleted. Only files with a non-null duration are returned,
+     * so unreadable/unsupported files never reach the UI in the first place.
+     */
+    private suspend fun syncTracks(context: Context, roots: List<File>): List<Track> {
+        val dao = AppDatabase.getInstance(context).trackDao()
+        val cached = dao.getAll().associateBy { it.path }
+        val seenPaths = HashSet<String>(cached.size)
+        val toUpsert = mutableListOf<TrackEntity>()
+        val result = mutableListOf<Track>()
+
         val stack = ArrayDeque<File>()
-        stack.addLast(dir)
+        roots.forEach { stack.addLast(it) }
         while (stack.isNotEmpty()) {
             val current = stack.removeLast()
             // Skip Android system directories to avoid permission errors and irrelevant content
             if (current.name == "Android") continue
             val children = current.listFiles() ?: continue
             for (child in children) {
-                when {
-                    child.isDirectory -> stack.addLast(child)
-                    child.isFile && child.extension.lowercase() in Track.AUDIO_EXTENSIONS ->
-                        results.add(Track.fromFile(child))
+                if (child.isDirectory) {
+                    stack.addLast(child)
+                    continue
                 }
+                if (!child.isFile || child.extension.lowercase() !in Track.AUDIO_EXTENSIONS) continue
+
+                val path = child.absolutePath
+                seenPaths.add(path)
+                val cachedRow = cached[path]
+
+                val entity = if (cachedRow != null && cachedRow.matches(child)) {
+                    cachedRow // fingerprint unchanged — skip re-parsing and re-probing entirely
+                } else {
+                    val base = Track.fromFile(child)
+                    val duration = probeDuration(child)
+                    TrackEntity.from(child, base, duration).also { toUpsert.add(it) }
+                }
+
+                if (entity.durationMs != null) result.add(entity.toTrack())
             }
         }
-        return results
+
+        if (toUpsert.isNotEmpty()) dao.upsertAll(toUpsert)
+
+        // Clean up rows for files that were removed/renamed since the last sync.
+        val stalePaths = cached.keys - seenPaths
+        if (stalePaths.isNotEmpty()) {
+            stalePaths.chunked(900).forEach { dao.deleteByPaths(it) }
+        }
+
+        return result
     }
 
     // region Playback Control

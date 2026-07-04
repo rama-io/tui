@@ -64,11 +64,26 @@
         </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/track_ext"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/placeholder_track_field"
-        android:textSize="16sp"
-        android:textColor="@color/disabled" />
+        android:orientation="vertical"
+        android:gravity="end">
+
+        <TextView
+            android:id="@+id/track_ext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/placeholder_track_field"
+            android:textSize="16sp"
+            android:textColor="@color/disabled" />
+
+        <TextView
+            android:id="@+id/track_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/placeholder_track_field"
+            android:textSize="12sp"
+            android:textColor="@color/disabled" />
+    </LinearLayout>
 </LinearLayout>
