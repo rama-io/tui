@@ -60,6 +60,14 @@ class MainActivity : CsActivity() {
         requestNotificationPermission()
         setContentView(R.layout.activity_main)
 
+        MusicManager.onPlaybackError = { track ->
+            android.widget.Toast.makeText(
+                this,
+                getString(R.string.error_playback_unsupported, track.title),
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+        }
+
         val root = findViewById<View>(R.id.root)
         applyEdgeToEdgePadding(root)
         applyCurrentTheme(root)

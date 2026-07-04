@@ -27,6 +27,7 @@
     <string name="hint_filter_tracks">Search…</string>
     <string name="placeholder_now_playing">--</string>
     <string name="placeholder_track_field">--</string>
+    <string name="error_playback_unsupported">Can\'t play \"%1$s\" :: unsupported format</string>
     <string name="placeholder_summary_format">Artist_1, Artist_2, .., Artist_N - Title - Country_1, Country_2, .., Country_N - Language_1, Language_2, .., Language_N</string>
     <string name="placeholder_metadata_format">Artist, Title, Album, Year, Cover, Description</string>
 

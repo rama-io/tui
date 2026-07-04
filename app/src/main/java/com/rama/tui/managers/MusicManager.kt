@@ -5,7 +5,9 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioManager
-import android.media.MediaMetadataRetriever
+import android.media.MediaCodecList
+import android.media.MediaExtractor
+import android.media.MediaFormat
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Environment
@@ -33,8 +35,6 @@ object MusicManager {
     private var audioFocusRequest: android.media.AudioFocusRequest? = null
     private var appContext: Context? = null
 
-    // MusicManager is a singleton with no lifecycle of its own, so it gets its own long-lived
-    // scope for the scan/DB-sync work rather than borrowing an Activity's lifecycleScope.
     private val managerScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     var tracks: List<Track> = emptyList()
@@ -332,38 +332,30 @@ object MusicManager {
             null,
             "${MediaStore.Audio.Media.TITLE} ASC"
         )?.use { cursor ->
-            val idCol    = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
-            val dataCol  = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
+            val idCol = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
+            val dataCol = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
             val titleCol = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
-            val artistCol= cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
+            val artistCol = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
             val durationCol = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
 
             while (cursor.moveToNext()) {
-                val id   = cursor.getLong(idCol)
+                val id = cursor.getLong(idCol)
                 val path = cursor.getString(dataCol) ?: continue
                 val file = File(path)
-
-                // MediaStore already indexes duration for anything it considers valid audio, so
-                // there's no need for a separate MediaMetadataRetriever probe on this API path.
-                // A null/zero duration here means MediaStore itself couldn't read the file —
-                // same "unplayable" signal we use elsewhere — so skip it.
                 val durationMs = cursor.getLong(durationCol).takeIf { it > 0 } ?: continue
-
-                // Build a content:// URI for this track — required for MediaPlayer.setDataSource()
-                // on API 29 since raw file path access is blocked by scoped storage.
                 val uri = android.content.ContentUris.withAppendedId(
                     MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id
                 )
 
                 val base = Track.fromFile(file)
-                val msTitle  = cursor.getString(titleCol)?.takeIf { it.isNotBlank() }
+                val msTitle = cursor.getString(titleCol)?.takeIf { it.isNotBlank() }
                 val msArtist = cursor.getString(artistCol)
                     ?.takeIf { it.isNotBlank() && it != "<unknown>" }
                 results.add(
                     if (msTitle != null || msArtist != null) {
                         base.copy(
-                            title      = msTitle ?: base.title,
-                            artists    = if (msArtist != null) listOf(msArtist) else base.artists,
+                            title = msTitle ?: base.title,
+                            artists = if (msArtist != null) listOf(msArtist) else base.artists,
                             contentUri = uri,
                             durationMs = durationMs,
                         )
@@ -396,35 +388,44 @@ object MusicManager {
         return roots.distinct().filter { it.exists() && it.isDirectory }
     }
 
-    // Attempts to read the file's duration. This doubles as the "can this actually be played"
-    // check: Android has no container parser at all for formats like wma/ape/wv/tta/dsf/dff, so
-    // MediaMetadataRetriever fails on them exactly as MediaPlayer would. A non-null result here
-    // isn't an absolute playback guarantee for every conceivable format (e.g. an ALAC track
-    // inside a valid MP4 container would still report a duration on API < 24, even though the
-    // ALAC decoder itself isn't available until API 24) but it's an accurate signal for the
-    // formats currently in Track.AUDIO_EXTENSIONS.
     private fun probeDuration(file: File): Long? {
-        val mmr = MediaMetadataRetriever()
+        val extractor = MediaExtractor()
         return try {
-            mmr.setDataSource(file.absolutePath)
-            mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull()
-                ?.takeIf { it > 0 }
+            extractor.setDataSource(file.absolutePath)
+            if (extractor.trackCount == 0) return null
+
+            var durationUs: Long? = null
+            var hasDecodableAudioTrack = false
+
+            for (i in 0 until extractor.trackCount) {
+                val format = extractor.getTrackFormat(i)
+                val mime = format.getString(MediaFormat.KEY_MIME) ?: continue
+                if (!mime.startsWith("audio/")) continue
+
+                // Not every format map carries KEY_DURATION; format.containsKey() itself needs
+                // API 29+, so just try the read and fall back to the container-level duration.
+                try {
+                    durationUs = format.getLong(MediaFormat.KEY_DURATION)
+                } catch (e: Exception) {
+                    // leave durationUs as-is (may already be set from another track, or stay null)
+                }
+
+                if (MediaCodecList(MediaCodecList.REGULAR_CODECS).findDecoderForFormat(format) != null) {
+                    hasDecodableAudioTrack = true
+                }
+            }
+
+            if (!hasDecodableAudioTrack) return null
+            durationUs?.let { it / 1000 }?.takeIf { it > 0 }
         } catch (e: Exception) {
             null
         } finally {
-            // release(), not close() — MediaMetadataRetriever only implements
-            // Closeable/AutoCloseable from API 29 onward.
-            mmr.release()
+            // release(), not close() — MediaExtractor only implements Closeable/AutoCloseable
+            // from API 28 onward, and minSdk here is 21.
+            extractor.release()
         }
     }
 
-    /**
-     * Walks [roots] on disk and reconciles the result against the cached [TrackEntity] table:
-     * unchanged files (same size + lastModified as the cached row) are reused as-is with no
-     * re-probing; new or modified files are re-parsed and re-probed for duration; DB rows for
-     * files that no longer exist are deleted. Only files with a non-null duration are returned,
-     * so unreadable/unsupported files never reach the UI in the first place.
-     */
     private suspend fun syncTracks(context: Context, roots: List<File>): List<Track> {
         val dao = AppDatabase.getInstance(context).trackDao()
         val cached = dao.getAll().associateBy { it.path }
@@ -473,7 +474,7 @@ object MusicManager {
         return result
     }
 
-    // region Playback Control
+    var onPlaybackError: ((Track) -> Unit)? = null
 
     fun play(index: Int = currentIndex) {
         if (tracks.isEmpty() || index !in tracks.indices) return
@@ -481,25 +482,49 @@ object MusicManager {
         val track = tracks[index]
 
         player?.release()
-        player = MediaPlayer().apply {
-            // API 29: raw file path access is blocked by scoped storage even with
-            // READ_EXTERNAL_STORAGE granted. Use the content:// URI from MediaStore instead.
-            if (track.contentUri != null) {
-                appContext!!.contentResolver.openFileDescriptor(track.contentUri, "r")
-                    ?.use { pfd -> setDataSource(pfd.fileDescriptor) }
-                    ?: throw java.io.IOException("Could not open URI: ${track.contentUri}")
-            } else {
-                setDataSource(track.file.absolutePath)
+        player = null
+
+        val newPlayer = MediaPlayer()
+        try {
+            newPlayer.apply {
+                // API 29: raw file path access is blocked by scoped storage even with
+                // READ_EXTERNAL_STORAGE granted. Use the content:// URI from MediaStore instead.
+                if (track.contentUri != null) {
+                    appContext!!.contentResolver.openFileDescriptor(track.contentUri, "r")
+                        ?.use { pfd -> setDataSource(pfd.fileDescriptor) }
+                        ?: throw java.io.IOException("Could not open URI: ${track.contentUri}")
+                } else {
+                    setDataSource(track.file.absolutePath)
+                }
+                setOnCompletionListener { onTrackFinished() }
+                setOnErrorListener { _, _, _ ->
+                    handlePlaybackFailure(track)
+                    true
+                }
+                prepare()
+                start()
             }
-            setOnCompletionListener { onTrackFinished() }
-            prepare()
-            start()
+        } catch (e: Exception) {
+            newPlayer.release()
+            handlePlaybackFailure(track)
+            return
         }
+
+        player = newPlayer
         isPlaying = true
         onStateChanged?.invoke()
         onNotificationChanged?.invoke()
         updatePlaybackState()
         updateMetadata()
+    }
+
+    private fun handlePlaybackFailure(track: Track) {
+        player = null
+        isPlaying = false
+        onPlaybackError?.invoke(track)
+        onStateChanged?.invoke()
+        onNotificationChanged?.invoke()
+        updatePlaybackState()
     }
 
     fun togglePlayPause() {
