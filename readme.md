@@ -29,11 +29,11 @@ https://www.youtube.com/watch?v=We8xXVLiVI4
 ---
 
 ## Permissions
-
 | Permission | Why it's needed |
 |---|---|
 | **Read Media / Read External Storage** | Required to list and play music files on your device. Without this, the app cannot see any tracks. |
 | **Write External Storage / Manage External Storage** | Required to rename and delete songs directly from the app. Only needed if you use those features; playback works without it. |
+| **Notifications** | Required to show the playback notification with song info and play/pause/skip controls. Without this, music still plays, but you won't see what's playing or get lock-screen/Bluetooth controls. |
 
 Permissions can be granted from **Settings → System** inside the app if they were skipped at first launch.
 

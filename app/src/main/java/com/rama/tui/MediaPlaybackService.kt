@@ -11,6 +11,8 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
+import android.graphics.drawable.Icon
+import androidx.core.content.ContextCompat
 import com.rama.tui.activities.MainActivity
 import com.rama.tui.managers.MusicManager
 import com.rama.bohio.R as BohioR
@@ -70,11 +72,12 @@ class MediaPlaybackService : Service() {
             addAction(ACTION_STOP)
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(controlReceiver, filter, RECEIVER_NOT_EXPORTED)
-        } else {
-            registerReceiver(controlReceiver, filter)
-        }
+        ContextCompat.registerReceiver(
+            this,
+            controlReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
 
         startForeground(NOTIFICATION_ID, buildNotification())
     }
@@ -125,6 +128,26 @@ class MediaPlaybackService : Service() {
             pendingFlags
         )
 
+        fun addNotificationAction(
+            builder: Notification.Builder,
+            iconRes: Int,
+            title: CharSequence,
+            intent: PendingIntent
+        ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                builder.addAction(
+                    Notification.Action.Builder(
+                        Icon.createWithResource(this, iconRes),
+                        title,
+                        intent
+                    ).build()
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                builder.addAction(iconRes, title, intent)
+            }
+        }
+
         val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Notification.Builder(this, CHANNEL_ID)
         } else {
@@ -134,19 +157,21 @@ class MediaPlaybackService : Service() {
 
         builder
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-        builder.setColor(resources.getColor(BohioR.color.media_background))
+        builder.setColor(ContextCompat.getColor(this, BohioR.color.media_background))
             .setContentTitle(track?.title ?: "Not playing")
             .setContentText(track?.displayArtists?.ifEmpty { null } ?: "")
             .setContentIntent(openAppIntent)
             .setOngoing(true)
             .setShowWhen(false)
-            .addAction(BohioR.drawable.px_prev, "Previous", actionIntent(ACTION_PREV, 1))
-            .addAction(
-                if (isPlaying) BohioR.drawable.px_pause else BohioR.drawable.px_play,
-                if (isPlaying) "Pause" else "Play",
-                actionIntent(ACTION_PLAY_PAUSE, 2)
-            )
-            .addAction(BohioR.drawable.px_next, "Next", actionIntent(ACTION_NEXT, 3))
+
+        addNotificationAction(builder, BohioR.drawable.px_prev, "Previous", actionIntent(ACTION_PREV, 1))
+        addNotificationAction(
+            builder,
+            if (isPlaying) BohioR.drawable.px_pause else BohioR.drawable.px_play,
+            if (isPlaying) "Pause" else "Play",
+            actionIntent(ACTION_PLAY_PAUSE, 2)
+        )
+        addNotificationAction(builder, BohioR.drawable.px_next, "Next", actionIntent(ACTION_NEXT, 3))
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             builder.setStyle(

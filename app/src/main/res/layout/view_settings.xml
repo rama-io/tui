@@ -39,6 +39,11 @@
                     android:text="Grant Storage Permission"
                     style="@style/BTN2" />
 
+                <Button
+                    android:id="@+id/notification_permission_button"
+                    android:text="Grant Notification Permission"
+                    style="@style/BTN2" />
+
                 <com.rama.bohio.widgets.WdCheckbox
                     android:id="@+id/show_system_bar"
                     android:text="@string/checkbox_show_system_bar"

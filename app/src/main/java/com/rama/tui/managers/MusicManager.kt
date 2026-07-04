@@ -16,6 +16,7 @@ import com.rama.tui.MediaPlaybackService
 import com.rama.tui.managers.PrefsManager.PrefSortStyle
 import com.rama.tui.Track
 import java.io.File
+import android.media.MediaMetadata
 
 object MusicManager {
 
@@ -92,6 +93,21 @@ object MusicManager {
         }
 
         MediaPlaybackService.start(context)
+    }
+
+    private fun updateMetadata() {
+        val track = currentTrack
+        val duration = player?.duration?.toLong()?.coerceAtLeast(0L) ?: 0L
+
+        mediaSession?.setMetadata(
+            MediaMetadata.Builder()
+                .putString(MediaMetadata.METADATA_KEY_TITLE, track?.title ?: "")
+                .putString(MediaMetadata.METADATA_KEY_ARTIST, track?.displayArtists ?: "")
+                .putString(MediaMetadata.METADATA_KEY_ALBUM, track?.file?.parentFile?.name ?: "")
+                .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, track?.title ?: "")
+                .putLong(MediaMetadata.METADATA_KEY_DURATION, duration)
+                .build()
+        )
     }
 
     fun releaseMediaSession() {
@@ -389,6 +405,7 @@ object MusicManager {
         onStateChanged?.invoke()
         onNotificationChanged?.invoke()
         updatePlaybackState()
+        updateMetadata()
     }
 
     fun togglePlayPause() {

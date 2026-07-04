@@ -23,12 +23,18 @@ class TrackAdapter(
         data class TrackItem(val track: Track) : Item()
     }
 
-    private var items: List<Item> = buildItems(allTracks)
-    private var filteredItems: List<Item> = items
+    // Folder names currently collapsed (hidden tracks, header still shown)
+    private val collapsedFolders = mutableSetOf<String>()
 
-    // The flat track list (headers excluded) for playback use
+    // Full grouped list (headers + all matching tracks, ignoring collapse state)
+    private var items: List<Item> = buildItems(allTracks)
+
+    // What's actually rendered — items with collapsed folders' tracks stripped out
+    private var displayItems: List<Item> = applyCollapse(items)
+
+    // The flat track list (headers excluded, collapse-independent) for playback use
     val flatTracks: List<Track>
-        get() = filteredItems.filterIsInstance<Item.TrackItem>().map { it.track }
+        get() = items.filterIsInstance<Item.TrackItem>().map { it.track }
 
     private fun buildItems(tracks: List<Track>): List<Item> {
         val result = mutableListOf<Item>()
@@ -44,15 +50,37 @@ class TrackAdapter(
         return result
     }
 
+    // Removes TrackItems that fall under a collapsed header
+    private fun applyCollapse(source: List<Item>): List<Item> {
+        val result = mutableListOf<Item>()
+        var currentCollapsed = false
+        for (item in source) {
+            when (item) {
+                is Item.Header -> {
+                    currentCollapsed = collapsedFolders.contains(item.folderName)
+                    result.add(item)
+                }
+                is Item.TrackItem -> {
+                    if (!currentCollapsed) result.add(item)
+                }
+            }
+        }
+        return result
+    }
+
+    private fun refreshDisplay() {
+        displayItems = applyCollapse(items)
+    }
+
     fun updateTracks(newTracks: List<Track>) {
         items = buildItems(newTracks)
-        filteredItems = items
+        refreshDisplay()
         notifyDataSetChanged()
     }
 
     fun resetToFullLibrary() {
         items = buildItems(allTracks)
-        filteredItems = items
+        refreshDisplay()
         notifyDataSetChanged()
     }
 
@@ -66,36 +94,61 @@ class TrackAdapter(
             baseTracks.filter { it.normalizedName.contains(normalizedQuery) }
         }
 
-        filteredItems = buildItems(filtered)
+        items = buildItems(filtered)
+        refreshDisplay()
         notifyDataSetChanged()
     }
 
-    override fun getCount(): Int = filteredItems.size
-    override fun getItem(position: Int): Any = filteredItems[position]
+    override fun getCount(): Int = displayItems.size
+    override fun getItem(position: Int): Any = displayItems[position]
     override fun getItemId(position: Int): Long = position.toLong()
 
     override fun getViewTypeCount(): Int = 2
-    override fun getItemViewType(position: Int): Int = when (filteredItems[position]) {
+    override fun getItemViewType(position: Int): Int = when (displayItems[position]) {
         is Item.Header -> 0
         is Item.TrackItem -> 1
     }
 
-    override fun isEnabled(position: Int): Boolean = filteredItems[position] is Item.TrackItem
+    override fun isEnabled(position: Int): Boolean = displayItems[position] is Item.TrackItem
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        return when (val item = filteredItems[position]) {
+        return when (val item = displayItems[position]) {
             is Item.Header -> {
-                val view = convertView
-                    ?: LayoutInflater.from(context).inflate(R.layout.list_header, parent, false)
-                view.findViewById<TextView>(R.id.title).text = item.folderName
+                // Headers get recreated fresh each time rather than reused via convertView,
+                // since collapse state changes their click listener target folder.
+                val view = if (convertView != null && convertView.getTag(R.id.list_header) == true) {
+                    convertView
+                } else {
+                    LayoutInflater.from(context).inflate(R.layout.list_header, parent, false).also {
+                        it.setTag(R.id.list_header, true)
+                    }
+                }
+
+                val isCollapsed = collapsedFolders.contains(item.folderName)
+                val prefix = if (isCollapsed) "[+] " else "[-] "
+                view.findViewById<TextView>(R.id.title).text = prefix + item.folderName
+
+                view.setOnClickListener {
+                    if (isCollapsed) {
+                        collapsedFolders.remove(item.folderName)
+                    } else {
+                        collapsedFolders.add(item.folderName)
+                    }
+                    refreshDisplay()
+                    notifyDataSetChanged()
+                }
+
                 ThemeManager.applyTheme(context, view)
                 view
             }
 
             is Item.TrackItem -> {
                 val track = item.track
-                val view = convertView
-                    ?: LayoutInflater.from(context).inflate(R.layout.list_track, parent, false)
+                val view = if (convertView != null && convertView.getTag(R.id.list_header) != true) {
+                    convertView
+                } else {
+                    LayoutInflater.from(context).inflate(R.layout.list_track, parent, false)
+                }
 
                 view.findViewById<TextView>(R.id.track_title).text = track.title
                 view.findViewById<TextView>(R.id.track_artist).text =

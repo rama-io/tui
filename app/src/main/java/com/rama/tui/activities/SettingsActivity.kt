@@ -26,6 +26,7 @@ class SettingsActivity : CsActivity() {
     companion object {
         const val REQ_MEDIA_PERM = 2010
         const val REQ_STORAGE_PERM = 2011
+        const val REQ_NOTIFICATION_PERM = 2012
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +73,13 @@ class SettingsActivity : CsActivity() {
                 MusicManager.loadTracks(this)
                 foldersController.populateFolders { MusicManager.loadTracks(this) }
                 setResult(Activity.RESULT_OK)
+            }
+        }
+
+        if (requestCode == REQ_NOTIFICATION_PERM) {
+            basicController.refreshPermissionButtonStates()
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                com.rama.tui.MediaPlaybackService.start(this)
             }
         }
     }
