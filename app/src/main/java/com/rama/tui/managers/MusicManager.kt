@@ -226,13 +226,6 @@ object MusicManager {
     }
 
     // region Track Loading
-
-    /**
-     * Scans (or, on non-Q API levels, DB-syncs) the library and updates [tracks]/[allTracks].
-     * Runs the filesystem walk, duration probing and DB work off the main thread; [onComplete]
-     * fires on the main thread once [tracks] has been updated, so callers can safely refresh
-     * their adapter/UI from it. Defaults to a no-op for call sites that don't need to react.
-     */
     fun loadTracks(context: Context, onComplete: (Boolean) -> Unit = {}) {
         if (!hasPermission(context)) {
             onComplete(false)
