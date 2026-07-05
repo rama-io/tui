@@ -60,6 +60,14 @@ class MainActivity : CsActivity() {
         requestNotificationPermission()
         setContentView(R.layout.activity_main)
 
+        MusicManager.onPlaybackError = { track ->
+            android.widget.Toast.makeText(
+                this,
+                getString(R.string.error_playback_unsupported, track.title),
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+        }
+
         val root = findViewById<View>(R.id.root)
         applyEdgeToEdgePadding(root)
         applyCurrentTheme(root)
@@ -218,28 +226,34 @@ class MainActivity : CsActivity() {
             }
         }
         if (requestCode == REQ_SETTINGS && resultCode == RESULT_OK) {
-            (listView.adapter as? TrackAdapter)?.updateTracks(MusicManager.tracks)
-            refreshUi()
+            // Re-sync rather than trusting MusicManager.tracks to already reflect whatever
+            // SettingsActivity kicked off — that load runs async and may not have finished yet.
+            MusicManager.loadTracks(this) {
+                (listView.adapter as? TrackAdapter)?.updateTracks(MusicManager.tracks)
+                refreshUi()
+            }
         }
         TrackEditDialog.onActivityResult(this, requestCode, resultCode, data)
     }
 
     private fun loadTracks() {
-        MusicManager.loadTracks(this)
-        listView.adapter = TrackAdapter(this, MusicManager.tracks) { track ->
-            TrackEditDialog.show(this, track) {
-                MusicManager.loadTracks(this)
-                (listView.adapter as? TrackAdapter)?.let { adapter ->
-                    adapter.updateTracks(MusicManager.tracks)
-                } ?: run {
-                    listView.adapter = TrackAdapter(this, MusicManager.tracks) { t ->
-                        TrackEditDialog.show(this, t) { loadTracks() }
+        MusicManager.loadTracks(this) {
+            listView.adapter = TrackAdapter(this, MusicManager.tracks) { track ->
+                TrackEditDialog.show(this, track) {
+                    MusicManager.loadTracks(this) {
+                        (listView.adapter as? TrackAdapter)?.let { adapter ->
+                            adapter.updateTracks(MusicManager.tracks)
+                        } ?: run {
+                            listView.adapter = TrackAdapter(this, MusicManager.tracks) { t ->
+                                TrackEditDialog.show(this, t) { loadTracks() }
+                            }
+                        }
+                        refreshUi()
                     }
                 }
-                refreshUi()
             }
+            refreshUi()
         }
-        refreshUi()
     }
 
     private fun refreshUi() {

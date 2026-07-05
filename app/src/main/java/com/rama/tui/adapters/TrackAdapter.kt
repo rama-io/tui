@@ -158,6 +158,7 @@ class TrackAdapter(
                 view.findViewById<TextView>(R.id.track_lang).text =
                     track.displayLanguages.ifEmpty { "---" }
                 view.findViewById<TextView>(R.id.track_ext).text = track.ext
+                view.findViewById<TextView>(R.id.track_duration).text = track.displayDuration
 
                 // Highlight currently playing row
                 val isActive = MusicManager.tracks.indexOf(track) == MusicManager.currentIndex

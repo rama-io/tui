@@ -14,10 +14,23 @@ data class Track(
     // Non-null only on API 29 where raw file access is blocked; MusicManager.play() uses
     // this URI with ContentResolver instead of setDataSource(path).
     val contentUri: android.net.Uri? = null,
+    // Null means the file couldn't be read/decoded at all (unsupported format, corrupt file, etc).
+    // Tracks with a null duration are filtered out before ever reaching the UI — see
+    // MusicManager.probeDuration() and MusicManager.syncTracks().
+    val durationMs: Long? = null,
 ) {
     val displayArtists: String get() = artists.joinToString(", ")
     val displayCountries: String get() = countries.joinToString(", ") { localeCountry(it) }
     val displayLanguages: String get() = languages.joinToString(", ") { localeLanguage(it) }
+
+    val displayDuration: String
+        get() {
+            val ms = durationMs ?: return ""
+            val totalSeconds = ms / 1000
+            val minutes = totalSeconds / 60
+            val seconds = totalSeconds % 60
+            return "%d:%02d".format(minutes, seconds)
+        }
 
     companion object {
         // Expected format: "Artist1, Artist2 - Title - Country1, Country2 - Lang1, Lang2"
@@ -64,7 +77,24 @@ data class Track(
         private fun String.splitComma() = split(",").map { it.trim() }.filter { it.isNotEmpty() }
 
         val AUDIO_EXTENSIONS = setOf(
-    "mp3", "m4a", "aac", "flac", "ogg", "wav", "aiff", "wma", "alac", "ape", "wv", "tta", "dsf", "dff", "opus", "amr", "mka"
-)
+            "mp3",
+            "m4a",
+            "aac",
+            "flac",
+            "ogg",
+            "wav",
+            "aiff",
+            "opus",
+            "amr",
+            "mka",
+            // Very likely not supported but kept here in case that they get future native support
+            "wma",
+            "alac",
+            "ape",
+            "wv",
+            "tta",
+            "dsf",
+            "dff",
+        )
     }
 }
