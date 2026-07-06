@@ -1,5 +1,7 @@
 # Changelog
 
+## 8
+
 ## 7
 
 - Add collapsible folders on playlist
