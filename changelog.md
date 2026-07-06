@@ -1,5 +1,11 @@
 # Changelog
 
+## 7
+
+- Add collapsible folders on playlist
+- Extend music files support
+- Add song durations
+
 ## 6
 
 - Fix color picker

@@ -3,6 +3,7 @@ import java.time.LocalDate
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    kotlin("kapt")
 }
 
 val currentYear = LocalDate.now().year
@@ -15,7 +16,7 @@ android {
         applicationId = "com.rama.tui"
         minSdk = 21
         targetSdk = 36
-        versionCode = 6
+        versionCode = 7
         versionName = "$currentYear.$versionCode"
     }
 
@@ -85,4 +86,8 @@ android {
 dependencies {
     implementation("net.jthink:jaudiotagger:3.0.1")
     implementation(project(":bohio"))
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
 }

@@ -50,13 +50,23 @@ class MainActivity : CsActivity() {
         private const val REQ_AUDIO = 1001
         private const val REQ_MANAGE = 1002
         private const val REQ_SETTINGS = 1003
+        private const val REQ_NOTIFICATIONS = 1004
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MusicManager.initMediaSession(this)
         MusicManager.requestAudioFocus(this)
+        requestNotificationPermission()
         setContentView(R.layout.activity_main)
+
+        MusicManager.onPlaybackError = { track ->
+            android.widget.Toast.makeText(
+                this,
+                getString(R.string.error_playback_unsupported, track.title),
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+        }
 
         val root = findViewById<View>(R.id.root)
         applyEdgeToEdgePadding(root)
@@ -137,7 +147,13 @@ class MainActivity : CsActivity() {
         loadOrRequestTracks()
         progressHandler.post(progressRunnable)
     }
-
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQ_NOTIFICATIONS)
+        }
+    }
     override fun onDestroy() {
         MusicManager.onStateChanged = null
         progressHandler.removeCallbacks(progressRunnable)
@@ -186,6 +202,12 @@ class MainActivity : CsActivity() {
         ) {
             loadOrRequestTracks()
         }
+
+        if (requestCode == REQ_NOTIFICATIONS && grantResults.isNotEmpty() &&
+            grantResults[0] == PackageManager.PERMISSION_GRANTED
+        ) {
+            MediaPlaybackService.start(this)
+        }
     }
 
     override fun onActivityResult(
@@ -204,28 +226,34 @@ class MainActivity : CsActivity() {
             }
         }
         if (requestCode == REQ_SETTINGS && resultCode == RESULT_OK) {
-            (listView.adapter as? TrackAdapter)?.updateTracks(MusicManager.tracks)
-            refreshUi()
+            // Re-sync rather than trusting MusicManager.tracks to already reflect whatever
+            // SettingsActivity kicked off — that load runs async and may not have finished yet.
+            MusicManager.loadTracks(this) {
+                (listView.adapter as? TrackAdapter)?.updateTracks(MusicManager.tracks)
+                refreshUi()
+            }
         }
         TrackEditDialog.onActivityResult(this, requestCode, resultCode, data)
     }
 
     private fun loadTracks() {
-        MusicManager.loadTracks(this)
-        listView.adapter = TrackAdapter(this, MusicManager.tracks) { track ->
-            TrackEditDialog.show(this, track) {
-                MusicManager.loadTracks(this)
-                (listView.adapter as? TrackAdapter)?.let { adapter ->
-                    adapter.updateTracks(MusicManager.tracks)
-                } ?: run {
-                    listView.adapter = TrackAdapter(this, MusicManager.tracks) { t ->
-                        TrackEditDialog.show(this, t) { loadTracks() }
+        MusicManager.loadTracks(this) {
+            listView.adapter = TrackAdapter(this, MusicManager.tracks) { track ->
+                TrackEditDialog.show(this, track) {
+                    MusicManager.loadTracks(this) {
+                        (listView.adapter as? TrackAdapter)?.let { adapter ->
+                            adapter.updateTracks(MusicManager.tracks)
+                        } ?: run {
+                            listView.adapter = TrackAdapter(this, MusicManager.tracks) { t ->
+                                TrackEditDialog.show(this, t) { loadTracks() }
+                            }
+                        }
+                        refreshUi()
                     }
                 }
-                refreshUi()
             }
+            refreshUi()
         }
-        refreshUi()
     }
 
     private fun refreshUi() {

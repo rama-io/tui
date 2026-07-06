@@ -2,6 +2,7 @@ package com.rama.tui.activities.settings
 
 import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
 import android.provider.Settings
@@ -32,6 +33,7 @@ class SettingsBasicController(private val activity: SettingsActivity) {
     private fun setupPermissionButtons() {
         val mediaBtn = activity.findViewById<View>(R.id.media_permission_button)
         val storageBtn = activity.findViewById<View>(R.id.storage_permission_button)
+        val notificationBtn = activity.findViewById<View>(R.id.notification_permission_button)
 
         // Media permission button
         mediaBtn.setOnClickListener {
@@ -80,6 +82,22 @@ class SettingsBasicController(private val activity: SettingsActivity) {
             }
         }
 
+        // Notification permission button
+        notificationBtn.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                activity.requestPermissions(
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    SettingsActivity.REQ_NOTIFICATION_PERM
+                )
+            } else {
+                // Pre-API 33: no runtime permission exists, notifications are granted by default.
+                // Send them to app settings anyway in case they were manually disabled there.
+                activity.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = android.net.Uri.parse("package:${activity.packageName}")
+                })
+            }
+        }
+
         // Reflect current grant state in button text
         refreshPermissionButtonStates()
     }
@@ -88,6 +106,8 @@ class SettingsBasicController(private val activity: SettingsActivity) {
         val mediaBtn = activity.findViewById<android.widget.Button>(R.id.media_permission_button)
         val storageBtn =
             activity.findViewById<android.widget.Button>(R.id.storage_permission_button)
+        val notificationBtn =
+            activity.findViewById<android.widget.Button>(R.id.notification_permission_button)
 
         val hasMedia = MusicManager.hasPermission(activity)
         mediaBtn.alpha = if (hasMedia) 0.4f else 1.0f
@@ -102,5 +122,13 @@ class SettingsBasicController(private val activity: SettingsActivity) {
 
         storageBtn.alpha = if (hasStorage) 0.4f else 1.0f
         storageBtn.isEnabled = !hasStorage
+
+        val hasNotifications = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            activity.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
+                    PackageManager.PERMISSION_GRANTED
+        else true
+
+        notificationBtn.alpha = if (hasNotifications) 0.4f else 1.0f
+        notificationBtn.isEnabled = !hasNotifications
     }
 }
