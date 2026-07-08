@@ -57,5 +57,9 @@
     <!-- APP -->
     <string name="app_name" translatable="false">@string/product_tui</string>
     <string name="app_desc">A minimal, privacy-first local music player that skips metadata entirely. What you see is exactly what you name, no hidden tags, no surprises.</string>
+
+    <!-- Contributors -->
+    <string name="contributor_calamytryx" translatable="false">Calamyty Mytryx</string>
+    <string name="contributor_calamytryx_url" translatable="false">github.com/Calamytryx</string>
 </resources>
 

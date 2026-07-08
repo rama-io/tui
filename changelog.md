@@ -2,6 +2,10 @@
 
 ## 8
 
+- Fix settings section state
+- API support increase to 37 / Android 17
+- Adding rest of contributors
+
 ## 7
 
 - Add collapsible folders on playlist
