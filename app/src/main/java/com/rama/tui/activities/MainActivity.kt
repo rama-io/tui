@@ -216,12 +216,6 @@ class MainActivity : CsActivity() {
         ) {
             loadOrRequestTracks()
         }
-
-        if (requestCode == REQ_NOTIFICATIONS && grantResults.isNotEmpty() &&
-            grantResults[0] == PackageManager.PERMISSION_GRANTED
-        ) {
-            MediaPlaybackService.start(this)
-        }
     }
 
     override fun onActivityResult(
