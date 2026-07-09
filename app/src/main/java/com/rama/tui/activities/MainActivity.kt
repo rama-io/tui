@@ -37,6 +37,10 @@ class MainActivity : CsActivity() {
     private lateinit var shuffleIcon: ImageView
     private lateinit var progressBg: View
     private lateinit var currentlyPlayingText: TextView
+    private lateinit var clearButton: FrameLayout
+    private lateinit var filterInput: EditText
+    private lateinit var openSettingsBtn: FrameLayout
+    private lateinit var nowPlaying: FrameLayout
 
     private val progressHandler = android.os.Handler(android.os.Looper.getMainLooper())
     private val progressRunnable = object : Runnable {
@@ -72,7 +76,7 @@ class MainActivity : CsActivity() {
         applyEdgeToEdgePadding(root)
         applyCurrentTheme(root)
 
-        val openSettingsBtn = findViewById<FrameLayout>(R.id.open_settings)
+        openSettingsBtn = findViewById(R.id.open_settings)
 
         openSettingsBtn.setOnClickListener {
             startActivityForResult(Intent(this, SettingsActivity::class.java), REQ_SETTINGS)
@@ -90,7 +94,7 @@ class MainActivity : CsActivity() {
         repeatIcon = repeatButton.getChildAt(0) as ImageView
         shuffleIcon = shuffleButton.getChildAt(0) as ImageView
 
-        val nowPlaying = findViewById<FrameLayout>(R.id.currently_playing_display)
+        nowPlaying = findViewById(R.id.currently_playing_display)
         progressBg = nowPlaying.findViewById(R.id.progress_bg)
         currentlyPlayingText = nowPlaying.getChildAt(1) as TextView
 
@@ -120,8 +124,8 @@ class MainActivity : CsActivity() {
             true
         }
 
-        val filterInput = findViewById<EditText>(R.id.filter_input)
-        val clearButton = findViewById<FrameLayout>(R.id.clear_button)
+        filterInput = findViewById(R.id.filter_input)
+        clearButton = findViewById(R.id.clear_button)
 
         filterInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) =
@@ -129,7 +133,15 @@ class MainActivity : CsActivity() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
             override fun afterTextChanged(s: Editable?) {
-                (listView.adapter as? TrackAdapter)?.filter(s?.toString() ?: "")
+                val query = s?.toString().orEmpty()
+
+                clearButton.visibility = if (query.isEmpty()) {
+                    View.GONE
+                } else {
+                    View.VISIBLE
+                }
+
+                (listView.adapter as? TrackAdapter)?.filter(query)
                 refreshUi()
             }
         })
@@ -147,6 +159,7 @@ class MainActivity : CsActivity() {
         loadOrRequestTracks()
         progressHandler.post(progressRunnable)
     }
+
     private fun requestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
@@ -154,6 +167,7 @@ class MainActivity : CsActivity() {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQ_NOTIFICATIONS)
         }
     }
+
     override fun onDestroy() {
         MusicManager.onStateChanged = null
         progressHandler.removeCallbacks(progressRunnable)
@@ -290,10 +304,12 @@ class MainActivity : CsActivity() {
                     MusicManager.togglePlayPause()
                     return true
                 }
+
                 KeyEvent.KEYCODE_MEDIA_NEXT -> {
                     MusicManager.next()
                     return true
                 }
+
                 KeyEvent.KEYCODE_MEDIA_PREVIOUS -> {
                     MusicManager.prev()
                     return true
