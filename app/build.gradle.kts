@@ -81,7 +81,11 @@ android {
 androidComponents {
     onVariants { variant ->
         variant.outputs.forEach { output ->
-            output.outputFileName.set("tui_${variant.name}.apk")
+            output.outputFileName.set(
+                output.versionName.map { name ->
+                    "tui_${name}.apk"
+                }
+            )
         }
     }
 }
