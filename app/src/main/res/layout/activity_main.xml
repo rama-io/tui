@@ -9,44 +9,55 @@
     android:background="@color/bg_1">
 
     <LinearLayout
-        android:background="@color/input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8sp"
-        android:paddingStart="16sp"
         android:orientation="horizontal"
         android:layout_gravity="center">
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:src="@drawable/px_search"
-                android:tint="@color/foreground"
-                style="@style/Icon24" />
-        </FrameLayout>
-
-        <EditText
-            android:id="@+id/filter_input"
-            android:padding="16sp"
+        <LinearLayout
+            android:background="@color/input"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="16sp"
-            android:textColor="@color/foreground"
-            android:background="@android:color/transparent" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center">
 
-        <FrameLayout
-            android:id="@+id/clear_button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="12sp">
 
-            <ImageView
-                android:src="@drawable/px_times"
-                android:tint="@color/foreground"
-                style="@style/Icon24" />
-        </FrameLayout>
+                <ImageView
+                    android:src="@drawable/px_search"
+                    android:tint="@color/foreground"
+                    style="@style/Icon24" />
+            </FrameLayout>
+
+            <EditText
+                android:id="@+id/filter_input"
+                android:padding="16sp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="16sp"
+                android:textColor="@color/foreground"
+                android:background="@android:color/transparent" />
+
+            <FrameLayout
+                android:id="@+id/clear_button"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="12sp">
+
+                <ImageView
+                    android:src="@drawable/px_times"
+                    android:tint="@color/foreground"
+                    style="@style/Icon24" />
+            </FrameLayout>
+
+        </LinearLayout>
 
         <FrameLayout
             android:id="@+id/open_settings"
@@ -60,7 +71,6 @@
                 android:contentDescription="@string/altdescr_open_settings"
                 style="@style/Icon24" />
         </FrameLayout>
-
     </LinearLayout>
 
     <ListView
