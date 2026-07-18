@@ -1,6 +1,7 @@
 package com.rama.tui.activities
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -12,6 +13,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -151,6 +153,7 @@ class MainActivity : CsActivity() {
             (listView.adapter as? TrackAdapter)?.resetToFullLibrary()
             MusicManager.restoreTracks(MusicManager.allTracks)
             refreshUi()
+            hideKeyboard(filterInput)
         }
 
         MusicManager.onStateChanged = { runOnUiThread { refreshUi() } }
@@ -158,6 +161,19 @@ class MainActivity : CsActivity() {
         // Load data and start progress ticker
         loadOrRequestTracks()
         progressHandler.post(progressRunnable)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        filterInput.clearFocus()
+        findViewById<View>(R.id.root).requestFocus()
+        hideKeyboard(filterInput)
+    }
+
+    private fun hideKeyboard(view: View) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+        view.clearFocus()
     }
 
     private fun requestNotificationPermission() {

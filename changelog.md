@@ -2,6 +2,8 @@
 
 ## 9
 
+- Prevent keyboard for showing up all the time
+
 ## 8
 
 - Fix settings section state
