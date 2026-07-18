@@ -1,6 +1,7 @@
 package com.rama.tui.activities
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -12,6 +13,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -27,6 +29,7 @@ import com.rama.tui.managers.MusicManager
 class MainActivity : CsActivity() {
 
     private lateinit var listView: ListView
+    private lateinit var loadingText: TextView
     private lateinit var playPauseIcon: ImageView
     private lateinit var playPauseButton: FrameLayout
     private lateinit var prevButton: FrameLayout
@@ -84,6 +87,7 @@ class MainActivity : CsActivity() {
 
         // Bind views
         listView = findViewById(R.id.track_list)
+        loadingText = findViewById(R.id.loading_text)
         playPauseButton = findViewById(R.id.play_pause_button)
         prevButton = findViewById(R.id.prev_button)
         nextButton = findViewById(R.id.next_button)
@@ -151,6 +155,7 @@ class MainActivity : CsActivity() {
             (listView.adapter as? TrackAdapter)?.resetToFullLibrary()
             MusicManager.restoreTracks(MusicManager.allTracks)
             refreshUi()
+            hideKeyboard(filterInput)
         }
 
         MusicManager.onStateChanged = { runOnUiThread { refreshUi() } }
@@ -158,6 +163,19 @@ class MainActivity : CsActivity() {
         // Load data and start progress ticker
         loadOrRequestTracks()
         progressHandler.post(progressRunnable)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        filterInput.clearFocus()
+        findViewById<View>(R.id.root).requestFocus()
+        hideKeyboard(filterInput)
+    }
+
+    private fun hideKeyboard(view: View) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+        view.clearFocus()
     }
 
     private fun requestNotificationPermission() {
@@ -236,18 +254,22 @@ class MainActivity : CsActivity() {
         if (requestCode == REQ_SETTINGS && resultCode == RESULT_OK) {
             // Re-sync rather than trusting MusicManager.tracks to already reflect whatever
             // SettingsActivity kicked off — that load runs async and may not have finished yet.
+            setLoading(true)
             MusicManager.loadTracks(this) {
                 (listView.adapter as? TrackAdapter)?.updateTracks(MusicManager.tracks)
                 refreshUi()
+                setLoading(false)
             }
         }
         TrackEditDialog.onActivityResult(this, requestCode, resultCode, data)
     }
 
     private fun loadTracks() {
+        setLoading(true)
         MusicManager.loadTracks(this) {
             listView.adapter = TrackAdapter(this, MusicManager.tracks) { track ->
                 TrackEditDialog.show(this, track) {
+                    setLoading(true)
                     MusicManager.loadTracks(this) {
                         (listView.adapter as? TrackAdapter)?.let { adapter ->
                             adapter.updateTracks(MusicManager.tracks)
@@ -257,11 +279,18 @@ class MainActivity : CsActivity() {
                             }
                         }
                         refreshUi()
+                        setLoading(false)
                     }
                 }
             }
             refreshUi()
+            setLoading(false)
         }
+    }
+
+    private fun setLoading(isLoading: Boolean) {
+        loadingText.visibility = if (isLoading) View.VISIBLE else View.GONE
+        listView.visibility = if (isLoading) View.INVISIBLE else View.VISIBLE
     }
 
     private fun refreshUi() {

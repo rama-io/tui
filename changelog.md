@@ -1,5 +1,11 @@
 # Changelog
 
+## 9
+
+- Prevent keyboard for showing up all the time
+- Respect .nomedia folders
+- Add loading message
+
 ## 8
 
 - Fix settings section state

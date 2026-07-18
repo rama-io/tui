@@ -432,6 +432,8 @@ object MusicManager {
             val current = stack.removeLast()
             // Skip Android system directories to avoid permission errors and irrelevant content
             if (current.name == "Android") continue
+
+            if (File(current, ".nomedia").exists()) continue
             val children = current.listFiles() ?: continue
             for (child in children) {
                 if (child.isDirectory) {
