@@ -3,6 +3,8 @@
 ## 9
 
 - Prevent keyboard for showing up all the time
+- Respect .nomedia folders
+- Add loading message
 
 ## 8
 

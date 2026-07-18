@@ -73,14 +73,29 @@
         </FrameLayout>
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/track_list"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="8sp"
-        android:layout_marginBottom="8sp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:layout_marginBottom="8sp">
+
+        <ListView
+            android:id="@+id/track_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="8sp" />
+
+        <TextView
+            android:id="@+id/loading_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:text="@string/placeholder_loading_tracks"
+            style="@style/H3" />
+
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/currently_playing_display"

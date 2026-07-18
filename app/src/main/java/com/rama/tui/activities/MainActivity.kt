@@ -29,6 +29,7 @@ import com.rama.tui.managers.MusicManager
 class MainActivity : CsActivity() {
 
     private lateinit var listView: ListView
+    private lateinit var loadingText: TextView
     private lateinit var playPauseIcon: ImageView
     private lateinit var playPauseButton: FrameLayout
     private lateinit var prevButton: FrameLayout
@@ -86,6 +87,7 @@ class MainActivity : CsActivity() {
 
         // Bind views
         listView = findViewById(R.id.track_list)
+        loadingText = findViewById(R.id.loading_text)
         playPauseButton = findViewById(R.id.play_pause_button)
         prevButton = findViewById(R.id.prev_button)
         nextButton = findViewById(R.id.next_button)
@@ -252,18 +254,22 @@ class MainActivity : CsActivity() {
         if (requestCode == REQ_SETTINGS && resultCode == RESULT_OK) {
             // Re-sync rather than trusting MusicManager.tracks to already reflect whatever
             // SettingsActivity kicked off — that load runs async and may not have finished yet.
+            setLoading(true)
             MusicManager.loadTracks(this) {
                 (listView.adapter as? TrackAdapter)?.updateTracks(MusicManager.tracks)
                 refreshUi()
+                setLoading(false)
             }
         }
         TrackEditDialog.onActivityResult(this, requestCode, resultCode, data)
     }
 
     private fun loadTracks() {
+        setLoading(true)
         MusicManager.loadTracks(this) {
             listView.adapter = TrackAdapter(this, MusicManager.tracks) { track ->
                 TrackEditDialog.show(this, track) {
+                    setLoading(true)
                     MusicManager.loadTracks(this) {
                         (listView.adapter as? TrackAdapter)?.let { adapter ->
                             adapter.updateTracks(MusicManager.tracks)
@@ -273,11 +279,18 @@ class MainActivity : CsActivity() {
                             }
                         }
                         refreshUi()
+                        setLoading(false)
                     }
                 }
             }
             refreshUi()
+            setLoading(false)
         }
+    }
+
+    private fun setLoading(isLoading: Boolean) {
+        loadingText.visibility = if (isLoading) View.VISIBLE else View.GONE
+        listView.visibility = if (isLoading) View.INVISIBLE else View.VISIBLE
     }
 
     private fun refreshUi() {
