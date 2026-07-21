@@ -320,13 +320,6 @@ object TrackEditDialog {
         }
     }
 
-    /**
-     * Renames [src] to [dest], routing through SAF for SD card paths on API 21+.
-     * If SAF permission hasn't been granted yet, launches the tree picker and
-     * stores [onComplete] to retry after the user grants access.
-     * Returns true if the rename completed synchronously, false if it failed or
-     * was deferred (SAF picker launched).
-     */
     private fun renameFile(
         activity: Activity,
         src: File,
@@ -339,9 +332,6 @@ object TrackEditDialog {
 
         // Primary storage: use File APIs directly
         if (isOnPrimaryStorage(src)) {
-            // API 29: renameTo() is unreliable on external primary storage under scoped storage.
-            // Use MediaStore.Audio.Media to update the filename — the system allows this with
-            // READ_EXTERNAL_STORAGE granted on Q, and it keeps the MediaStore index in sync.
             if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
                 try {
                     val values = ContentValues().apply {
@@ -478,9 +468,6 @@ object TrackEditDialog {
         }
     }
 
-    /* This removes tag headers from the file on disk.
-    * Do NOT call the instance audioFile.delete(), that deletes the file itself.
-    */
     private fun stripEmbeddedMetadata(activity: Activity, track: Track): Boolean {
         val supported = activity.resources.getStringArray(R.array.supported_audio_formats)
         if (track.ext.lowercase() !in supported) {

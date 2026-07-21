@@ -11,12 +11,7 @@ data class Track(
     val languages: List<String>,
     val ext: String,
     val normalizedName: String = normalize(file.nameWithoutExtension),
-    // Non-null only on API 29 where raw file access is blocked; MusicManager.play() uses
-    // this URI with ContentResolver instead of setDataSource(path).
     val contentUri: android.net.Uri? = null,
-    // Null means the file couldn't be read/decoded at all (unsupported format, corrupt file, etc).
-    // Tracks with a null duration are filtered out before ever reaching the UI — see
-    // MusicManager.probeDuration() and MusicManager.syncTracks().
     val durationMs: Long? = null,
 ) {
     val displayArtists: String get() = artists.joinToString(", ")
