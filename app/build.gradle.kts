@@ -16,7 +16,7 @@ android {
         applicationId = "com.rama.tui"
         minSdk = 21
         targetSdk = 37
-        versionCode = 10
+        versionCode = 11
         versionName = "$currentYear.$versionCode"
     }
 

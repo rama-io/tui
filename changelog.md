@@ -1,5 +1,7 @@
 # Changelog
 
+## 11
+
 ## 10
 
 - Fix bug where making a no-matching-query would prevent a new query to ever match something
