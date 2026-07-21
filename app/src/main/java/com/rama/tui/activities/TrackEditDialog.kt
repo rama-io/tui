@@ -354,7 +354,9 @@ object TrackEditDialog {
                         "${MediaStore.Audio.Media.DATA} = ?",
                         arrayOf(src.absolutePath)
                     )
-                    if (updated > 0) { onComplete(true); return }
+                    if (updated > 0) {
+                        onComplete(true); return
+                    }
                 } catch (e: Exception) {
                     Log.e(TAG, "API 29 MediaStore rename failed, falling back: ${e.message}")
                 }
@@ -408,7 +410,8 @@ object TrackEditDialog {
                 }
                 // We don't have a Context reference here, so delegate back via a flag —
                 // the caller (renameFile) handles the Q path directly before reaching this.
-            } catch (_: Exception) { }
+            } catch (_: Exception) {
+            }
         }
 
         return try {
@@ -479,9 +482,7 @@ object TrackEditDialog {
     * Do NOT call the instance audioFile.delete(), that deletes the file itself.
     */
     private fun stripEmbeddedMetadata(activity: Activity, track: Track): Boolean {
-        val supported = setOf(
-    "mp3", "m4a", "aac", "flac", "ogg", "wav", "aiff", "wma", "alac", "ape", "wv", "tta", "dsf", "dff", "opus", "amr", "mka"
-)
+        val supported = R.array.supported_audio_formats
         if (track.ext.lowercase() !in supported) {
             Toast.makeText(
                 activity,

@@ -76,24 +76,6 @@ data class Track(
 
         private fun String.splitComma() = split(",").map { it.trim() }.filter { it.isNotEmpty() }
 
-        val AUDIO_EXTENSIONS = setOf(
-            "mp3",
-            "m4a",
-            "aac",
-            "flac",
-            "ogg",
-            "wav",
-            "aiff",
-            "opus",
-            "amr",
-            "mka",
-            "wma",
-            "alac",
-            "ape",
-            "wv",
-            "tta",
-            "dsf",
-            "dff",
-        )
+        val AUDIO_EXTENSIONS = R.array.supported_audio_formats
     }
 }

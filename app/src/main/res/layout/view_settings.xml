@@ -315,11 +315,6 @@
                 app:header="@string/h2_list"
                 app:defaultExpanded="true">
 
-                <com.rama.bohio.widgets.WdCheckbox
-                    android:id="@+id/keep_folder_files_together"
-                    android:text="@string/checkbox_keep_files_from_the_same_folder_together"
-                    style="@style/Checkbox" />
-
                 <RadioGroup
                     android:id="@+id/list_sort"
                     style="@style/RadioGroup">
@@ -334,6 +329,22 @@
                         android:text="@string/radio_sort_z_a"
                         style="@style/Radio" />
                 </RadioGroup>
+
+                <com.rama.bohio.widgets.WdCheckbox
+                    android:id="@+id/keep_folder_files_together"
+                    android:text="@string/checkbox_keep_files_from_the_same_folder_together"
+                    style="@style/Checkbox" />
+
+                <com.rama.bohio.widgets.WdCheckbox
+                    android:id="@+id/prevent_nomedia"
+                    android:text="Prevent .nomedia folders to be scanned"
+                    style="@style/Checkbox" />
+
+                <!-- Here all the audio format supported from  R.array.supported_audio_formats ↓ -->
+                <com.rama.bohio.widgets.WdCheckbox
+                    android:id="@+id/include_mp3"
+                    android:text="mp3"
+                    style="@style/Checkbox" />
 
             </com.rama.bohio.widgets.WdCollapsibleSection>
 

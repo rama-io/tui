@@ -14,4 +14,25 @@
         <item>@string/radio_language_system_default</item>
         <item>@string/radio_language_english</item>
     </string-array>
+
+    <string-array name="supported_audio_formats">
+        <item>mp3</item>
+        <item>m4a</item>
+        <item>aac</item>
+        <item>flac</item>
+        <item>ogg</item>
+        <item>wav</item>
+        <item>aiff</item>
+        <item>wma</item>
+        <item>alac</item>
+        <item>ape</item>
+        <item>wv</item>
+        <item>tta</item>
+        <item>dsf</item>
+        <item>dff</item>
+        <item>opus</item>
+        <item>amr</item>
+        <item>mka</item>
+    </string-array>
+
 </resources>
