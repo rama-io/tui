@@ -86,12 +86,11 @@ class TrackAdapter(
 
     fun filter(query: String) {
         val normalizedQuery = normalize(query)
-        val baseTracks = items.filterIsInstance<Item.TrackItem>().map { it.track }
 
         val filtered = if (normalizedQuery.isBlank()) {
-            baseTracks
+            allTracks
         } else {
-            baseTracks.filter { it.normalizedName.contains(normalizedQuery) }
+            allTracks.filter { it.normalizedName.contains(normalizedQuery) }
         }
 
         items = buildItems(filtered)

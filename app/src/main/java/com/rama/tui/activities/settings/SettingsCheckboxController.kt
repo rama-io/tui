@@ -11,10 +11,16 @@ class SettingsCheckboxController(private val activity: SettingsActivity) {
 
     private val prefs get() = activity.prefs
 
-    fun setup() {
+    fun setup(onNomediaChanged: () -> Unit = {}) {
         bindWdCheckbox(R.id.show_system_bar, PrefKeys.SYSTEM_BAR_VISIBLE, false)
         bindWdCheckbox(R.id.keep_screen_awake, PrefKeys.SYSTEM_PREVENT_SLEEP, false)
         bindWdCheckbox(R.id.keep_folder_files_together, FileKeys.LIST_SORT_KEEP_TOGETHER, false)
+        bindWdCheckbox(
+            R.id.prevent_nomedia,
+            FileKeys.RESPECT_NOMEDIA,
+            true,
+            onChange = { onNomediaChanged() }
+        )
     }
 
     private fun bindWdCheckbox(

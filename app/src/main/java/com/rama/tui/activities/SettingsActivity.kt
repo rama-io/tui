@@ -10,6 +10,7 @@ import com.rama.tui.R
 import com.rama.bohio.R as BohioR
 import com.rama.tui.managers.MusicManager
 import com.rama.tui.activities.settings.SettingsAppearanceController
+import com.rama.tui.activities.settings.SettingsAudioFormatsController
 import com.rama.tui.activities.settings.SettingsBasicController
 import com.rama.tui.activities.settings.SettingsCheckboxController
 import com.rama.tui.activities.settings.SettingsLanguageController
@@ -40,7 +41,10 @@ class SettingsActivity : CsActivity() {
         basicController = SettingsBasicController(this).also { it.setup() }
         appearanceController = SettingsAppearanceController(this).also { it.setup() }
         SettingsLanguageController(this).setup()
-        SettingsCheckboxController(this).setup()
+        SettingsCheckboxController(this).setup {
+            MusicManager.loadTracks(this)
+            setResult(Activity.RESULT_OK)
+        }
         SettingsListController(this).setup {
             MusicManager.reSort(this)
             setResult(Activity.RESULT_OK)
@@ -51,6 +55,11 @@ class SettingsActivity : CsActivity() {
                 MusicManager.loadTracks(this)
                 setResult(Activity.RESULT_OK)
             }
+        }
+
+        SettingsAudioFormatsController(this).setup {
+            MusicManager.loadTracks(this)
+            setResult(Activity.RESULT_OK)
         }
     }
 

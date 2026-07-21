@@ -320,13 +320,6 @@ object TrackEditDialog {
         }
     }
 
-    /**
-     * Renames [src] to [dest], routing through SAF for SD card paths on API 21+.
-     * If SAF permission hasn't been granted yet, launches the tree picker and
-     * stores [onComplete] to retry after the user grants access.
-     * Returns true if the rename completed synchronously, false if it failed or
-     * was deferred (SAF picker launched).
-     */
     private fun renameFile(
         activity: Activity,
         src: File,
@@ -339,9 +332,6 @@ object TrackEditDialog {
 
         // Primary storage: use File APIs directly
         if (isOnPrimaryStorage(src)) {
-            // API 29: renameTo() is unreliable on external primary storage under scoped storage.
-            // Use MediaStore.Audio.Media to update the filename — the system allows this with
-            // READ_EXTERNAL_STORAGE granted on Q, and it keeps the MediaStore index in sync.
             if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
                 try {
                     val values = ContentValues().apply {
@@ -354,7 +344,9 @@ object TrackEditDialog {
                         "${MediaStore.Audio.Media.DATA} = ?",
                         arrayOf(src.absolutePath)
                     )
-                    if (updated > 0) { onComplete(true); return }
+                    if (updated > 0) {
+                        onComplete(true); return
+                    }
                 } catch (e: Exception) {
                     Log.e(TAG, "API 29 MediaStore rename failed, falling back: ${e.message}")
                 }
@@ -408,7 +400,8 @@ object TrackEditDialog {
                 }
                 // We don't have a Context reference here, so delegate back via a flag —
                 // the caller (renameFile) handles the Q path directly before reaching this.
-            } catch (_: Exception) { }
+            } catch (_: Exception) {
+            }
         }
 
         return try {
@@ -475,13 +468,8 @@ object TrackEditDialog {
         }
     }
 
-    /* This removes tag headers from the file on disk.
-    * Do NOT call the instance audioFile.delete(), that deletes the file itself.
-    */
     private fun stripEmbeddedMetadata(activity: Activity, track: Track): Boolean {
-        val supported = setOf(
-    "mp3", "m4a", "aac", "flac", "ogg", "wav", "aiff", "wma", "alac", "ape", "wv", "tta", "dsf", "dff", "opus", "amr", "mka"
-)
+        val supported = activity.resources.getStringArray(R.array.supported_audio_formats)
         if (track.ext.lowercase() !in supported) {
             Toast.makeText(
                 activity,
