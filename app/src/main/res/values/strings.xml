@@ -14,6 +14,10 @@
     <!-- Checkbox -->
     <string name="checkbox_lock_screen_from_falling_asleep">Keep screen awake</string>
     <string name="checkbox_keep_files_from_the_same_folder_together">Keep files from the same folder together</string>
+    <string name="checkbox_prevent_nomedia_scan">Prevent .nomedia folders from being scanned</string>
+
+    <!-- Label -->
+    <string name="label_audio_formats">Audio formats to scan for</string>
 
     <!-- InputLabel -->
     <string name="label_track_title">Title</string>

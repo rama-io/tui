@@ -240,13 +240,15 @@ object MusicManager {
                 prefs.getString(PrefsManager.FileKeys.LIST_SORT_STYLE, PrefSortStyle.AZ)
             val keepTogether =
                 prefs.getBoolean(PrefsManager.FileKeys.LIST_SORT_KEEP_TOGETHER, false)
+            val enabledFormats = prefs.getEnabledAudioFormats()
+            val respectNomedia = prefs.isRespectNomediaEnabled()
 
             // API 29 (Android 10): scoped storage blocks File.listFiles() on external storage
             // even with READ_EXTERNAL_STORAGE granted. Use MediaStore instead.
             val raw = if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-                scanViaMediaStore(appCtx)
+                scanViaMediaStore(appCtx, enabledFormats)
             } else {
-                syncTracks(appCtx, getStorageRoots(appCtx))
+                syncTracks(appCtx, getStorageRoots(appCtx), enabledFormats, respectNomedia)
             }
 
             // Persist the full folder list before filtering so settings can always show all folders
@@ -306,7 +308,7 @@ object MusicManager {
 
     // API 29 only: READ_EXTERNAL_STORAGE is granted but File.listFiles() is blocked by scoped
     // storage. Query MediaStore instead, which respects the permission correctly on this API level.
-    private fun scanViaMediaStore(context: Context): List<Track> {
+    private fun scanViaMediaStore(context: Context, allowedFormats: Set<String>): List<Track> {
         val results = mutableListOf<Track>()
 
         val projection = arrayOf(
@@ -335,6 +337,7 @@ object MusicManager {
                 val id = cursor.getLong(idCol)
                 val path = cursor.getString(dataCol) ?: continue
                 val file = File(path)
+                if (file.extension.lowercase() !in allowedFormats) continue
                 val durationMs = cursor.getLong(durationCol).takeIf { it > 0 } ?: continue
                 val uri = android.content.ContentUris.withAppendedId(
                     MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id
@@ -419,7 +422,12 @@ object MusicManager {
         }
     }
 
-    private suspend fun syncTracks(context: Context, roots: List<File>): List<Track> {
+    private suspend fun syncTracks(
+        context: Context,
+        roots: List<File>,
+        allowedFormats: Set<String>,
+        respectNomedia: Boolean
+    ): List<Track> {
         val dao = AppDatabase.getInstance(context).trackDao()
         val cached = dao.getAll().associateBy { it.path }
         val seenPaths = HashSet<String>(cached.size)
@@ -433,14 +441,14 @@ object MusicManager {
             // Skip Android system directories to avoid permission errors and irrelevant content
             if (current.name == "Android") continue
 
-            if (File(current, ".nomedia").exists()) continue
+            if (respectNomedia && File(current, ".nomedia").exists()) continue
             val children = current.listFiles() ?: continue
             for (child in children) {
                 if (child.isDirectory) {
                     stack.addLast(child)
                     continue
                 }
-                if (!child.isFile || child.extension.lowercase() !in Track.AUDIO_EXTENSIONS) continue
+                if (!child.isFile || child.extension.lowercase() !in allowedFormats) continue
 
                 val path = child.absolutePath
                 seenPaths.add(path)

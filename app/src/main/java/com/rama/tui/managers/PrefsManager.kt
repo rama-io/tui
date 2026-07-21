@@ -2,11 +2,14 @@ package com.rama.tui.managers
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.rama.tui.R
 import com.rama.bohio.objects.PrefKeys
 import com.rama.bohio.objects.PrefTheme
 import com.rama.bohio.managers.PrefsManager as BohioPrefsManager
 
 class PrefsManager private constructor(context: Context) : BohioPrefsManager(context) {
+
+    private val appContext = context.applicationContext
 
     override val defaultTheme: String = PrefTheme.TOKYO_NIGHT
 
@@ -17,6 +20,11 @@ class PrefsManager private constructor(context: Context) : BohioPrefsManager(con
         const val SD_TREE_URI = "storage:sd_tree_uri"
         const val DISABLED_FOLDERS = "folders:disabled"
         const val ALL_FOLDERS = "folders:all"
+        const val RESPECT_NOMEDIA = "folders:respect_nomedia"
+
+        private const val FORMAT_KEY_PREFIX = "list:includes:"
+
+        fun formatKey(format: String) = "$FORMAT_KEY_PREFIX${format.lowercase()}"
     }
 
     object PrefSortStyle {
@@ -30,7 +38,32 @@ class PrefsManager private constructor(context: Context) : BohioPrefsManager(con
         editor.putBoolean(FileKeys.LIST_SORT_KEEP_TOGETHER, false)
         editor.putBoolean(PrefKeys.SETTINGS_SECTION_LIST, true)
         editor.putBoolean(PrefKeys.SETTINGS_SECTION_FOLDERS, true)
+        editor.putBoolean(FileKeys.RESPECT_NOMEDIA, true)
+
+        allSupportedAudioFormats().forEach { format ->
+            editor.putBoolean(FileKeys.formatKey(format), true)
+        }
     }
+
+    fun allSupportedAudioFormats(): Array<String> =
+        appContext.resources.getStringArray(R.array.supported_audio_formats)
+
+    fun isRespectNomediaEnabled(): Boolean =
+        prefs.getBoolean(FileKeys.RESPECT_NOMEDIA, true)
+
+    fun setRespectNomediaEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(FileKeys.RESPECT_NOMEDIA, enabled).apply()
+    }
+
+    fun isAudioFormatEnabled(format: String): Boolean =
+        prefs.getBoolean(FileKeys.formatKey(format), true)
+
+    fun setAudioFormatEnabled(format: String, enabled: Boolean) {
+        prefs.edit().putBoolean(FileKeys.formatKey(format), enabled).apply()
+    }
+
+    fun getEnabledAudioFormats(): Set<String> =
+        allSupportedAudioFormats().filter { isAudioFormatEnabled(it) }.toSet()
 
     fun getDisabledFolders(): Set<String> {
         val raw = prefs.getString(FileKeys.DISABLED_FOLDERS, "") ?: ""
