@@ -75,7 +75,5 @@ data class Track(
                 .takeIf { it.isNotBlank() && it != code } ?: code
 
         private fun String.splitComma() = split(",").map { it.trim() }.filter { it.isNotEmpty() }
-
-        val AUDIO_EXTENSIONS = R.array.supported_audio_formats
     }
 }

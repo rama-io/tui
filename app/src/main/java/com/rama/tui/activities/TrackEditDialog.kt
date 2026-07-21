@@ -482,7 +482,7 @@ object TrackEditDialog {
     * Do NOT call the instance audioFile.delete(), that deletes the file itself.
     */
     private fun stripEmbeddedMetadata(activity: Activity, track: Track): Boolean {
-        val supported = R.array.supported_audio_formats
+        val supported = activity.resources.getStringArray(R.array.supported_audio_formats)
         if (track.ext.lowercase() !in supported) {
             Toast.makeText(
                 activity,
