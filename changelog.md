@@ -1,5 +1,9 @@
 # Changelog
 
+## 11
+
+- Make it so unplugging headphones or disconnecting bluetooth devices stop playback
+
 ## 10
 
 - Fix bug where making a no-matching-query would prevent a new query to ever match something
