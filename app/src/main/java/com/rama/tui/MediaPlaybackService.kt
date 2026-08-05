@@ -16,6 +16,8 @@ import androidx.core.content.ContextCompat
 import com.rama.tui.activities.MainActivity
 import com.rama.tui.managers.MusicManager
 import com.rama.bohio.R as BohioR
+import android.media.AudioManager
+
 
 class MediaPlaybackService : Service() {
 
@@ -44,6 +46,21 @@ class MediaPlaybackService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
+
+    private val receiverIsNoisy = object : BroadcastReceiver() {
+        override fun onReceive(context : Context, intent : Intent) {
+            if (intent.action == AudioManager.ACTION_AUDIO_BECOMING_NOISY) {
+                if (MusicManager.isPlaying) {
+                    MusicManager.togglePlayPause()
+                }
+                updateNotification()
+            }
+        }
+    }
+
+    
+
+    
     private val controlReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
@@ -70,12 +87,20 @@ class MediaPlaybackService : Service() {
             addAction(ACTION_NEXT)
             addAction(ACTION_PREV)
             addAction(ACTION_STOP)
+            addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
         }
 
         ContextCompat.registerReceiver(
             this,
             controlReceiver,
             filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
+
+        ContextCompat.registerReceiver(
+            this,
+            receiverIsNoisy,
+            IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY),
             ContextCompat.RECEIVER_NOT_EXPORTED
         )
 
@@ -88,6 +113,7 @@ class MediaPlaybackService : Service() {
 
     override fun onDestroy() {
         unregisterReceiver(controlReceiver)
+        unregisterReceiver(receiverIsNoisy)
         MusicManager.onNotificationChanged = null
         super.onDestroy()
     }

@@ -7,6 +7,7 @@ import com.rama.bohio.objects.PrefKeys
 import com.rama.bohio.objects.PrefTheme
 import com.rama.bohio.managers.PrefsManager as BohioPrefsManager
 
+
 class PrefsManager private constructor(context: Context) : BohioPrefsManager(context) {
 
     private val appContext = context.applicationContext
