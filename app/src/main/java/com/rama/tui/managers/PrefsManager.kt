@@ -37,8 +37,6 @@ class PrefsManager private constructor(context: Context) : BohioPrefsManager(con
     override fun applyAppDefaults(editor: SharedPreferences.Editor) {
         editor.putString(FileKeys.LIST_SORT_STYLE, PrefSortStyle.AZ)
         editor.putBoolean(FileKeys.LIST_SORT_KEEP_TOGETHER, false)
-        editor.putBoolean(PrefKeys.SETTINGS_SECTION_LIST, true)
-        editor.putBoolean(PrefKeys.SETTINGS_SECTION_FOLDERS, true)
         editor.putBoolean(FileKeys.RESPECT_NOMEDIA, true)
 
         allSupportedAudioFormats().forEach { format ->
