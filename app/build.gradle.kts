@@ -1,4 +1,3 @@
-import java.time.LocalDate
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -6,7 +5,7 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-val currentYear = LocalDate.now().year
+val currentYear = 2026
 
 android {
     namespace = "com.rama.tui"
