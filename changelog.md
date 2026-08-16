@@ -1,5 +1,9 @@
 # Changelog
 
+## 12
+
+- Add catalogue
+
 ## 11
 
 - Make it so unplugging headphones or disconnecting bluetooth devices stop playback
@@ -7,7 +11,8 @@
 ## 10
 
 - Fix bug where making a no-matching-query would prevent a new query to ever match something
-- Add media files filters. if you have a bunch of wav files, opus or ogg you can now filtered them out.
+- Add media files filters. if you have a bunch of wav files, opus or ogg you can now filtered them
+  out.
 - Checkbox to consider the .nomedia folders
 
 ## 9
